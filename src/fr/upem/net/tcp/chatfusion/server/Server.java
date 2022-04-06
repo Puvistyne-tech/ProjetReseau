@@ -184,6 +184,7 @@ public class Server {
         var clientKey = sc.register(selector, SelectionKey.OP_READ);
 
         clientKey.attach(new Context(this, clientKey));
+        //addClients();
     }
 
     private void silentlyClose(SelectionKey key) {

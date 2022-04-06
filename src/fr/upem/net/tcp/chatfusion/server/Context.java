@@ -45,41 +45,42 @@ public class Context implements IContext {
     @Override
     public void processIn() {
 
-        for (; ; ) {
-            var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
-            ///esijsopie
+        var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
+        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
+            for (; ; ) {
+                ///esijsopie
 
-            Reader<? extends Packet> reader = null;
+                Reader<? extends Packet> reader = null;
 
 //            List<? extends Constable> list=new ArrayList<String>();
 //            list.add("new PublicMessagePackets");
 //            list.add(2);
 
-            switch (opCodeReader) {
-                case MESSAGE_PUBLIC -> {
-                    reader = new PublicMessageReader();
-                    break;
+                switch (opCodeReader) {
+                    case MESSAGE_PUBLIC -> {
+                        reader = new PublicMessageReader();
+                        break;
+                    }
+                    case MESSAGE_PRIVATE -> {
+                        reader = new PrivateMessageReader();
+                        break;
+                    }
                 }
-                case MESSAGE_PRIVATE -> {
-                    reader = new PrivateMessageReader();
-                    break;
-                }
-            }
 
-            Reader.ProcessStatus status = reader.process(bufferIn);
-            switch (status) {
-                case DONE:
-                    var value = reader.get();
-                    server.broadcast(value);
-                    reader.reset();
-                    break;
-                case REFILL:
-                    return;
-                case ERROR:
-                    silentlyClose();
-                    return;
+                Reader.ProcessStatus status = reader.process(bufferIn);
+                switch (status) {
+                    case DONE:
+                        var value = reader.get();
+                        server.broadcast(value);
+                        reader.reset();
+                        break;
+                    case REFILL:
+                        return;
+                    case ERROR:
+                        silentlyClose();
+                        return;
+                }
             }
-        }
     }
 
     @Override
@@ -107,6 +108,16 @@ public class Context implements IContext {
 //                msg.limit(bufferOut.remaining());
 //                bufferOut.put(msg);
 //                msg.limit(oldLimit);
+//            }
+//        }
+//        private void processOut() {
+//            var it = queue.iterator();
+//            while (it.hasNext()) {
+//                var msgbuff = it.next();
+//                if (bufferOut.remaining() < msgbuff.remaining())
+//                    continue;
+//                bufferOut.put(msgbuff);
+//                it.remove();
 //            }
 //        }
     }
