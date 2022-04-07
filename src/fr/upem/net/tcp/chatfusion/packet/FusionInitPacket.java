@@ -25,7 +25,7 @@ public class FusionInitPacket implements Packet {
             String name,
             SocketAddress address,
             int nbMembers,
-            String... members)  {
+            String... members) {
         this.opcode = OPCODE.FUSION_INIT;
         this.name = Packet.verifySize(name, 100);
         this.address = address;
@@ -34,17 +34,17 @@ public class FusionInitPacket implements Packet {
     }
 
     @Override
-    public ByteBuffer toByteBuffer()  {
+    public ByteBuffer toByteBuffer() {
 
-        var tmpBuff=ByteBuffer.allocate(1024);
+        var tmpBuff = ByteBuffer.allocate(1024);
         for (var mem : members) {
-            var tmp=new StringPacket(mem).toByteBuffer();
+            var tmp = new StringPacket(mem).toByteBuffer();
             tmpBuff.put(tmp);
         }
 
         var buffer = new Buffer.Builder(opcode)
-                .addString(new StringPacket(name).toByteBuffer())
-                .addString(new StringPacket(address.toString()).toByteBuffer())
+                .addStringPacket(new StringPacket(name))
+                .addStringPacket(new StringPacket(address.toString()))
                 .addInt(nbMembers)
                 .addBuffer(tmpBuff)
                 .build();

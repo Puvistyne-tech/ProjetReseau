@@ -1,9 +1,12 @@
 package fr.upem.net.tcp.chatfusion.buffer;
 
 import fr.upem.net.tcp.chatfusion.exception.BufferSizeExceededException;
+import fr.upem.net.tcp.chatfusion.packet.Packet;
 import fr.upem.net.tcp.chatfusion.utils.OPCODE;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class Buffer {
 
@@ -57,10 +60,19 @@ public class Buffer {
             throw new BufferSizeExceededException();
         }
 
-        public Builder addString(ByteBuffer buffer) {
+        public Builder addStringPacket(Packet packet) {
+
+            if (packet.toByteBuffer().remaining() <= BUFF_SIZE - 1) {
+                this.byteBuffer.put(packet.toByteBuffer());
+                return this;
+            } else throw new BufferSizeExceededException();
+        }
+
+        public Builder addString(String string) {
+            var buffer = StandardCharsets.UTF_8.encode(string);
+
             if (buffer.remaining() <= BUFF_SIZE - 1) {
-                var size = buffer.remaining();
-                this.byteBuffer.putInt(size).put(buffer);
+                this.byteBuffer.putInt(buffer.remaining()).put(buffer);
                 return this;
             } else throw new BufferSizeExceededException();
         }

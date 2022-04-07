@@ -49,6 +49,7 @@ public class Server {
         System.out.println(serverSocketChannel.getLocalAddress());
         selector = Selector.open();
         servers.put(name, serverSocketChannel.getLocalAddress());
+
         this.leader = name;
         this.console = new Thread(this::consoleRun);
     }
@@ -56,7 +57,8 @@ public class Server {
     private enum Commands {
         INFO,
         SHUTDOWN,
-        SHUTDOWNNOW
+        SHUTDOWNNOW,
+        MERGE
     }
 
     private void consoleRun() {
@@ -183,8 +185,9 @@ public class Server {
         sc.configureBlocking(false);
         var clientKey = sc.register(selector, SelectionKey.OP_READ);
 
-        clientKey.attach(new Context(this, clientKey));
-        //addClients();
+        var clientContext=new Context(this,clientKey);
+        clientKey.attach(clientContext);
+        //addClients(,clientContext);
     }
 
     private void silentlyClose(SelectionKey key) {

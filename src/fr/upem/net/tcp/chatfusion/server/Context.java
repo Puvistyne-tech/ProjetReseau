@@ -18,6 +18,7 @@ public class Context implements IContext {
     Logger logger = Logger.getLogger(Context.class.getName());
 
 
+    private String login;
     private final SelectionKey key;
     private final SocketChannel sc;
     private final Server server;
@@ -30,6 +31,7 @@ public class Context implements IContext {
         this.key = key;
         this.sc = (SocketChannel) key.channel();
         this.server = server;
+//        this.login
     }
 
     public boolean isClosed() {
@@ -46,27 +48,18 @@ public class Context implements IContext {
     public void processIn() {
 
         var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
-        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
+//        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
             for (; ; ) {
-                ///esijsopie
 
                 Reader<? extends Packet> reader = null;
 
-//            List<? extends Constable> list=new ArrayList<String>();
-//            list.add("new PublicMessagePackets");
-//            list.add(2);
-
                 switch (opCodeReader) {
-                    case MESSAGE_PUBLIC -> {
-                        reader = new PublicMessageReader();
-                        break;
-                    }
-                    case MESSAGE_PRIVATE -> {
-                        reader = new PrivateMessageReader();
-                        break;
-                    }
+                    case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
+                    case MESSAGE_PRIVATE -> reader = new PrivateMessageReader();
+                    case LOGIN_ANONYMOUS -> reader = new LoginAnonymousReader();
                 }
 
+                assert reader != null;
                 Reader.ProcessStatus status = reader.process(bufferIn);
                 switch (status) {
                     case DONE:

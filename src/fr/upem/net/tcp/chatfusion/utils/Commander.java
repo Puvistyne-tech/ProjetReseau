@@ -1,63 +1,66 @@
 package fr.upem.net.tcp.chatfusion.utils;
 
+import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
-import fr.upem.net.tcp.chatfusion.packet.PrivateFilePacket;
 import fr.upem.net.tcp.chatfusion.packet.PrivateMessagePacket;
 import fr.upem.net.tcp.chatfusion.packet.PublicMessagePacket;
 
 import java.util.regex.Pattern;
 
 public class Commander {
-    private static final String PATTERN_MESSAGE = "([/|@]?)([A-Za-z0-9_]*):([A-Za-z0-9_]*)\s+(.*)";
+    static private final String PATTERN_MESSAGE = "([/|@]?)([A-Za-z0-9_]*):([A-Za-z0-9_]*)\s+(.*)";
 
-    static Packet commande(String loginSrc, String serverSrc, String input) {
-        var pattern = Pattern.compile(PATTERN_MESSAGE);
-        var matcher = pattern.matcher(input);
+    public static Packet commande(String input) {
+//        var pattern = Pattern.compile(PATTERN_MESSAGE);
+//        var matcher = pattern.matcher(input);
+//
+//        var loginDest = matcher.group(2);
+//        var serverDest = matcher.group(3);
+//        var textMessage = matcher.group(4);
+//
+//        return switch (matcher.group(1)) {
+//            case "@" -> new PrivateMessagePacket(serverDest, loginDest, serverDest, loginDest, textMessage);
+////            case "/"-> null;
+//            default -> new PublicMessagePacket(serverDest, loginDest, textMessage);
+//
+//        };
 
-        var loginDest = matcher.group(2);
-        var serverDest = matcher.group(3);
 
-        switch (matcher.group(1)) {
-            case "@" : {
-                // Envoie d'un message texte privé
-                var textMessage = matcher.group(4);
-                return new PrivateMessagePacket(
-                        serverSrc, loginSrc, serverDest, loginDest, textMessage);
+        if (input.startsWith("@")) {
+            var t = input.substring(1);
+            if (t.contains(":")) {
+                var tt = t.split(":");
+                var login = tt[0];
+                var ttt = tt[1].trim().split(" ", 2);
+                var server = ttt[0];
+                var text = ttt[1];
+
+                return new PublicMessagePacket(server, login, text);
             }
-
-            case "/" : {
-                // Envoie d'un fichier (privé)
-                // Définir méthode pour partionnement en block du fichier si trop grand
-                var filePath = matcher.group(4);
-                /*
-                return new PrivateFilePacket(
-                        serverSrc, loginSrc, serverDest, loginDest, ... );
-                */
-                break;
-            }
-
-            default :
-                // Un message publique
-                var textMessage = matcher.group(4);
-                return new PublicMessagePacket(serverSrc, loginSrc, textMessage);
 
         }
+//        return new PublicMessagePacket("Dummy", "Login", input);
+        return new LoginAnonymousPacket("Dummy");
+
+
+//        return null;
+    }
+
+    public static String[] getLogin(String[] args){
+        //TODO login from the terminal
+
+        String[] login={"serverD","port","DummyLogin"};
+        String[] loginPassword={"serverD","port","DummyLogin"};
+
+        return login;
     }
 
 }
 
-//javba redex
-// mge pub
-/**
- * mgs pub : message
- * mgs pri : @login:server message
- * fichier pub : login:server fichier
- * ficher pri : /login:server file
- */
 
 /**
  * Les commandes tapées par l'utilisateur seront interprétées comme suit :
- *
+ * <p>
  * si la commande ne commence par / ou @, elle est interprétée comme un message public ;
  * si la commande est de la forme @login:server message, le reste de la commande est interprétée comme un message privé pour l'utilisateur login sur le serveur server
  * si la commande est la forme /login:server file, la commande est interprétée comme l'envoi du fichier file pour l'utilisateur login sur le serveur server
