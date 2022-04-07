@@ -23,4 +23,8 @@ public class LoginPasswordPacket implements Packet {
                 .addString(password)
                 .build();
     }
+
+    public String getLogin() {
+        return this.login;
+    }
 }

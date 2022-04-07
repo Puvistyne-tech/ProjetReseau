@@ -2,8 +2,9 @@ package fr.upem.net.tcp.chatfusion.server;
 
 
 import fr.upem.net.tcp.chatfusion.context.IContext;
-import fr.upem.net.tcp.chatfusion.packet.Packet;
+import fr.upem.net.tcp.chatfusion.packet.*;
 import fr.upem.net.tcp.chatfusion.reader.*;
+import fr.upem.net.tcp.chatfusion.utils.FileHander;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -49,31 +50,104 @@ public class Context implements IContext {
 
         var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
 //        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
-            for (; ; ) {
+        for (; ; ) {
 
-                Reader<? extends Packet> reader = null;
+            Reader<? extends Packet> reader = null;
 
-                switch (opCodeReader) {
-                    case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
-                    case MESSAGE_PRIVATE -> reader = new PrivateMessageReader();
-                    case LOGIN_ANONYMOUS -> reader = new LoginAnonymousReader();
+            switch (opCodeReader) {
+                case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
+                case MESSAGE_PRIVATE -> {
+                    handlePrivateMessage(new PrivateMessageReader());
+                    return;
                 }
-
-                assert reader != null;
-                Reader.ProcessStatus status = reader.process(bufferIn);
-                switch (status) {
-                    case DONE:
-                        var value = reader.get();
-                        server.broadcast(value);
-                        reader.reset();
-                        break;
-                    case REFILL:
-                        return;
-                    case ERROR:
-                        silentlyClose();
-                        return;
+                case LOGIN_ANONYMOUS -> {
+                    handleAnonymousLogin(new LoginAnonymousReader());
+                    return;
+                }
+                case LOGIN_PASSWORD -> {
+                    handleLoginPassword(new LoginPasswordReader());
+                    return;
                 }
             }
+
+            assert reader != null;
+            Reader.ProcessStatus status = reader.process(bufferIn);
+            switch (status) {
+                case DONE:
+                    var value = reader.get();
+                    server.broadcast(value);
+                    reader.reset();
+                    break;
+                case REFILL:
+                    return;
+                case ERROR:
+                    silentlyClose();
+                    return;
+            }
+        }
+    }
+
+    private void handlePrivateMessage(PrivateMessageReader reader) {
+        assert reader != null;
+        var status = reader.process(bufferIn);
+
+        if (status == Reader.ProcessStatus.DONE) {
+            var prvtMsgP = reader.get();
+
+
+            //this.server.addClients(client, sc.getRemoteAddress());
+            server.sendTo(key, prvtMsgP);
+        } else {
+            silentlyClose();
+        }
+    }
+
+    private void handleLoginPassword(LoginPasswordReader reader) {
+        assert reader != null;
+        var status = reader.process(bufferIn);
+
+        try {
+            if (status == Reader.ProcessStatus.DONE) {
+                var clientP = reader.get();
+                var client = clientP.getLogin();
+
+//                if (FileHander.checkIfUserExist(client) || server.ifClientAlreadyConnected(client)) {
+                if (server.ifClientAlreadyConnected(client)) {
+                    server.sendTo(key, new LoginRefusedPacket());
+                    silentlyClose();
+                } else {
+                    this.server.addClients(client, sc.getRemoteAddress());
+                    server.sendTo(key, new LoginAcceptedPacket(server.getLeaderName()));
+                }
+            } else {
+                silentlyClose();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleAnonymousLogin(Reader<LoginAnonymousPacket> reader) {
+        assert reader != null;
+        var status = reader.process(bufferIn);
+
+        try {
+            if (status == Reader.ProcessStatus.DONE) {
+                var clientP = reader.get();
+                var client = clientP.getLogin();
+
+                if (FileHander.checkIfUserExist(client)) {
+                    server.sendTo(key, new LoginRefusedPacket());
+                }
+
+                this.server.addClients(client, sc.getRemoteAddress());
+                server.sendTo(key, new LoginAcceptedPacket(server.getLeaderName()));
+            } else {
+                silentlyClose();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -164,6 +238,7 @@ public class Context implements IContext {
         if (sc.read(bufferIn) == -1) {
             logger.warning("client disconnected!");
             closed = true;
+            silentlyClose();
             return;
         }
         processIn();
@@ -174,6 +249,7 @@ public class Context implements IContext {
     @Override
     public void doWrite() throws IOException {
         bufferOut.flip();
+        System.out.println("<==Sending something...");
         sc.write(bufferOut);
         bufferOut.compact();
         processOut();

@@ -26,7 +26,7 @@ public class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     private String leader;
-    private String name;
+    private final String name;
     private final ServerSocketChannel serverSocketChannel;
 
     private final HashMap<String, SocketAddress> servers = new HashMap<>();
@@ -34,12 +34,19 @@ public class Server {
     private final Selector selector;
 
     private final Thread console;
+    private final Thread fusion;
     private final ArrayBlockingQueue<Commands> commandQueue = new ArrayBlockingQueue<>(1);
 
-    private final Map<String, Context> clients = new HashMap<>();
+    private final Map<String, SocketAddress> clients = new HashMap<String, SocketAddress>();
 
     private final Object lock = new Object();
 
+    public String getServerName(){
+        return this.name;
+    }
+    public String getLeaderName(){
+        return this.leader;
+    }
 
     public Server(String name) throws IOException {
         this.name = Objects.requireNonNull(name);
@@ -52,6 +59,11 @@ public class Server {
 
         this.leader = name;
         this.console = new Thread(this::consoleRun);
+        this.fusion = new Thread(this::fusionRun);
+    }
+
+    private void fusionRun() {
+
     }
 
     private enum Commands {
@@ -77,7 +89,6 @@ public class Server {
 
     private void sendCommands(String command) throws InterruptedException {
         try {
-            //TODO need to add a lock
             synchronized (lock) {
                 commandQueue.put(Commands.valueOf(command.toUpperCase()));
                 selector.wakeup();
@@ -94,6 +105,7 @@ public class Server {
             case INFO -> showAllClients();
             case SHUTDOWN -> serverSocketChannel.close();
             case SHUTDOWNNOW -> shutdownServer();
+            case MERGE -> fusion.start();
             default -> logger.warning("Invalid Command");
         }
     }
@@ -125,8 +137,8 @@ public class Server {
                 .sorted().findFirst().orElseThrow(RuntimeException::new);
     }
 
-    public void addClients(String login, Context clientContext) {
-
+    public void addClients(String login, SocketAddress address) {
+        this.clients.put(login,address);
     }
 
     public void launch() throws IOException {
@@ -148,6 +160,12 @@ public class Server {
         }
     }
 
+    public boolean ifClientAlreadyConnected(String client){
+        System.out.println(clients);
+        var t=clients.containsKey(client);
+        System.out.println(t);
+        return t;
+    }
 
     private void treatKey(SelectionKey key) {
         Helpers.printSelectedKey(key); // for debug
@@ -218,6 +236,13 @@ public class Server {
 
 
         });
+    }
+
+    public void sendTo(SelectionKey key,Packet packet){
+        var context = (Context) key.attachment();
+
+        if (context != null)
+            (context).queueMessage(packet);
     }
 
     public static void main(String[] args) throws NumberFormatException, IOException {

@@ -22,4 +22,8 @@ public class LoginAnonymousPacket implements Packet {
                 .addString(login)
                 .build();
     }
+
+    public String getLogin(){
+        return this.login;
+    }
 }

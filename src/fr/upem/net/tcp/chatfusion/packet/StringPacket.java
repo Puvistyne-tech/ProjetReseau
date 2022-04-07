@@ -11,4 +11,9 @@ public record StringPacket(String message) implements Packet {
         return new Buffer.Builder()
                 .addString(message).build();
     }
+
+    @Override
+    public String message() {
+        return message;
+    }
 }
