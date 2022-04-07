@@ -2,6 +2,10 @@ package fr.upem.net.tcp.chatfusion.client;
 
 import fr.upem.net.tcp.chatfusion.context.IContext;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
+import fr.upem.net.tcp.chatfusion.reader.OpCodeHandler;
+import fr.upem.net.tcp.chatfusion.reader.PrivateMessageReader;
+import fr.upem.net.tcp.chatfusion.reader.PublicMessageReader;
+import fr.upem.net.tcp.chatfusion.reader.Reader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,6 +13,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 
 
@@ -36,7 +42,38 @@ public class Context implements IContext {
      */
 
     public void processIn() {
-        for (; ; ) {
+
+
+        var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
+        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
+            for (; ; ) {
+
+                Reader<? extends Packet> reader = null;
+
+                switch (opCodeReader) {
+                    case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
+                    case MESSAGE_PRIVATE -> reader = new PrivateMessageReader();
+                }
+
+                assert reader != null;
+                Reader.ProcessStatus status = reader.process(bufferIn);
+                switch (status) {
+                    case DONE:
+                        var value = reader.get();
+                        var dtf = DateTimeFormatter.ofPattern("HH:mm");
+                        System.out.println(dtf.format(LocalDateTime.now()) + " ::: " + value.toString());
+                        reader.reset();
+                        break;
+                    case REFILL:
+                        return;
+                    case ERROR:
+                        silentlyClose();
+                        return;
+                }
+            }
+
+
+//        for (; ; ) {
             /*
 
             Reader<Packet> reader = new PublicMessageReader();
@@ -61,8 +98,20 @@ public class Context implements IContext {
 //                    silentlyClose();
 //                    return;
 //            }
-        }
+//        }
 
+//        while (bufferIn.hasRemaining()) {
+//            switch (reader.process(bufferIn)) {
+//                case ERROR:
+//                    silentlyClose();
+//                case REFILL:
+//                    return;
+//                case DONE:
+//                    log(reader.get());
+//                    reader.reset();
+//                    break;
+//            }
+//        }
     }
 
     /**
@@ -103,7 +152,7 @@ public class Context implements IContext {
 //
 //            ByteBuffer mgsBuffer = ByteBuffer.allocate(serverBuff.capacity() + userBuffer.capacity() + textBuffer.capacity() + Integer.BYTES * 4);
 
-            var mgsBuffer=message.toByteBuffer();
+            var mgsBuffer = message.toByteBuffer();
 //            if (mgsBuffer.capacity() >= 1024) {
 //                return;
 //            }
@@ -200,6 +249,7 @@ public class Context implements IContext {
 
         bufferOut.flip();
 
+        System.out.println(bufferOut);
         sc.write(bufferOut);
 
         if (bufferOut.hasRemaining()) {
@@ -218,7 +268,10 @@ public class Context implements IContext {
         if (!sc.finishConnect()) {
             return;
         }
+        //
         key.interestOps(SelectionKey.OP_READ);
         //updateInterestOps();
     }
+
+
 }

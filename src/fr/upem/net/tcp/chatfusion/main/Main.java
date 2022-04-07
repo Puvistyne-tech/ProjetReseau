@@ -18,7 +18,7 @@ public class Main {
         var t2 = CHA.encode("123").flip();
 
         var buffer = new Buffer.Builder(OPCODE.FUSION_INIT_FWD)
-                .addString(CHA.encode("abcdef"))
+                .addString("abcdef")
                 .build();
 
         System.out.println(buffer);
@@ -26,7 +26,7 @@ public class Main {
 
     public static void test2() {
         var tmpBuff = ByteBuffer.allocate(1024);
-        String[] members = {"oijefis", "ezugeg", "fzzzzz"};
+        String[] members = {"a", "a", "a"};
         for (var mem : members) {
             var tmp = new StringPacket(mem).toByteBuffer();
             tmpBuff.put(tmp);

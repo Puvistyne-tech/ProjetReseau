@@ -30,45 +30,6 @@ public class StringReader implements Reader<StringPacket> {
             throw new IllegalStateException();
         }
 
-//        switch (state) {
-//            case WAITING_SIZE:
-//                readSize(buffer);
-//                if (state == State.ERROR) {
-//                    return ProcessStatus.ERROR;
-//                }
-//
-//
-//            case WAITING_STRING:
-//                if (buffer.remaining() < internalBuffer.remaining()) {
-//                    internalBuffer.put(buffer);
-//                } else {
-//                    var oldLimit = buffer.limit();
-//                    buffer.limit(internalBuffer.remaining());   // On diminue la limite du buffer externe à la taille du buffer interne
-//                    internalBuffer.put(buffer);                 // pour qu'on puisse l'ajouter
-//                    buffer.limit(oldLimit);                     // Ensuite on remet le buffer à son état original
-//                }
-//
-//                if (internalBuffer.hasRemaining()) {
-//                    return REFILL;
-//                }
-//                /*
-//                state = State.DONE;
-//                internalBuffer.flip();
-//                value = new StringPacket(CHARSET.decode(internalBuffer).toString());
-//
-//                return DONE;
-//                */
-//
-//
-//        }
-//
-//        state = State.DONE;
-//        internalBuffer.flip();
-//        value = new StringPacket(CHARSET.decode(internalBuffer).toString());
-//
-//        return DONE;
-
-
         if (state == State.WAITING_SIZE) {
             readSize(buffer);
             if (state == State.ERROR) {
@@ -78,7 +39,6 @@ public class StringReader implements Reader<StringPacket> {
         if (state != State.WAITING_STRING) {
             return REFILL;
         }
-
 
         buffer.flip();
 

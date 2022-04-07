@@ -28,7 +28,7 @@ public class PrivateMessagePacket implements Packet {
             String loginSource,
             String severDestination,
             String loginDestination,
-            String message)  {
+            String message) {
         this.opcode = OPCODE.MESSAGE_PRIVATE;
         this.serverSource = Packet.verifySize(serverSource, 100);
         this.loginSource = Packet.verifySize(loginSource, 30);
@@ -38,13 +38,13 @@ public class PrivateMessagePacket implements Packet {
     }
 
     @Override
-    public ByteBuffer toByteBuffer()  {
+    public ByteBuffer toByteBuffer() {
         var buffer = new Buffer.Builder(opcode)
-                .addString(new StringPacket(serverSource).toByteBuffer())
-                .addString(new StringPacket(loginSource).toByteBuffer())
-                .addString(new StringPacket(severDestination).toByteBuffer())
-                .addString(new StringPacket(loginDestination).toByteBuffer())
-                .addString(new StringPacket(message).toByteBuffer())
+                .addStringPacket(new StringPacket(serverSource))
+                .addStringPacket(new StringPacket(loginSource))
+                .addStringPacket(new StringPacket(severDestination))
+                .addStringPacket(new StringPacket(loginDestination))
+                .addStringPacket(new StringPacket(message))
                 .build();
 //        return buffer.flip();
         return buffer;

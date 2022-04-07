@@ -22,8 +22,7 @@ public class PublicMessagePacket implements Packet {
     public PublicMessagePacket(
             String serverSource,
             String loginSource,
-            String message)  {
-        //TODO OPCODE
+            String message) {
         this.opcode = OPCODE.MESSAGE_PUBLIC;
         this.server = Packet.verifySize(serverSource, 100);
         this.login = Packet.verifySize(loginSource, 30);
@@ -31,14 +30,22 @@ public class PublicMessagePacket implements Packet {
     }
 
     @Override
-    public ByteBuffer toByteBuffer()  {
-        var buffer = new Buffer.Builder(opcode)
-                .addString(new StringPacket(server).toByteBuffer())
-                .addString(new StringPacket(login).toByteBuffer())
+    public ByteBuffer toByteBuffer() {
 
-                .addString(new StringPacket(message).toByteBuffer())
+        return new Buffer.Builder(opcode)
+                .addStringPacket(new StringPacket(server))
+                .addStringPacket(new StringPacket(login))
+                .addStringPacket(new StringPacket(message))
                 .build();
+    }
 
-        return buffer;
+    @Override
+    public String toString() {
+        return "PublicMessagePacket{" +
+                "opcode=" + opcode +
+                ", server='" + server + '\'' +
+                ", login='" + login + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

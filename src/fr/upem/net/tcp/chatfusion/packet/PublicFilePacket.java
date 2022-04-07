@@ -30,12 +30,12 @@ public class PublicFilePacket implements Packet {
     private final Byte bytes;
 
     public PublicFilePacket(
-                            String serverSource,
-                            String loginSource,
-                            String severDestination,
-                            String loginDestination,
-                            String filename, int nbBlocks, int blockSize,
-                            Byte bytes)  {
+            String serverSource,
+            String loginSource,
+            String severDestination,
+            String loginDestination,
+            String filename, int nbBlocks, int blockSize,
+            Byte bytes) {
         this.opcode = OPCODE.FILE_PUBLIC;
         this.serverSource = Packet.verifySize(serverSource, 100);
         this.loginSource = Packet.verifySize(loginSource, 30);
@@ -50,11 +50,11 @@ public class PublicFilePacket implements Packet {
     @Override
     public ByteBuffer toByteBuffer() {
         return new Buffer.Builder(opcode)
-                .addString(new StringPacket(serverSource).toByteBuffer())
-                .addString(new StringPacket(loginSource).toByteBuffer())
-                .addString(new StringPacket(severDestination).toByteBuffer())
-                .addString(new StringPacket(loginDestination).toByteBuffer())
-                .addString(new StringPacket(filename).toByteBuffer())
+                .addStringPacket(new StringPacket(serverSource))
+                .addStringPacket(new StringPacket(loginSource))
+                .addStringPacket(new StringPacket(severDestination))
+                .addStringPacket(new StringPacket(loginDestination))
+                .addStringPacket(new StringPacket(filename))
                 .addInt(nbBlocks)
                 .addInt(blockSize)
                 .addBytes(bytes)

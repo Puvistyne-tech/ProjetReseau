@@ -1,8 +1,11 @@
 package fr.upem.net.tcp.chatfusion.client;
 
+import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
 import fr.upem.net.tcp.chatfusion.reader.Message;
+import fr.upem.net.tcp.chatfusion.reader.OpCodeHandler;
 import fr.upem.net.tcp.chatfusion.utils.Commander;
+import fr.upem.net.tcp.chatfusion.utils.OPCODE;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -24,8 +27,15 @@ public class Client {
     private final Selector selector;
     private final InetSocketAddress serverAddress;
     private final String login;
-    private final Thread console;
+    private final String password;
+    private final boolean authentified;
+
     private Context uniqueContext;
+    private SelectionKey key;
+
+    private final Thread main;
+    private final Thread console;
+    private final Thread connectToServer;
 
     private final Object lock = new Object();
 
@@ -33,11 +43,28 @@ public class Client {
 
 
     public Client(String login, InetSocketAddress serverAddress) throws IOException {
-        this.serverAddress = serverAddress;
         this.login = login;
+        this.serverAddress = serverAddress;
+        this.password = null;
+        this.authentified = false;
+
         this.sc = SocketChannel.open();
         this.selector = Selector.open();
         this.console = new Thread(this::consoleRun);
+        this.connectToServer=new Thread(this::connectToServer);
+    }
+
+    public Client(String login, String password, InetSocketAddress serverAddress) throws IOException {
+//        this.Client(login,serverAddress);
+        this.login = login;
+        this.password = password;
+        this.serverAddress = serverAddress;
+        this.authentified = true;
+
+        this.sc = SocketChannel.open();
+        this.selector = Selector.open();
+        this.console = new Thread(this::consoleRun);
+        this.connectToServer=new Thread(this::connectToServer);
     }
 
     private void consoleRun() {
@@ -68,6 +95,7 @@ public class Client {
         synchronized (lock) {
 
             var t = Commander.commande(msg);
+            System.out.println(t.toByteBuffer());
             queue.put(t);
 
             selector.wakeup(); // Force le selector à sortir de selectojkr.select, pour pouvoir effectuer l'interaction correctement entre la thread console et la thread main
@@ -81,22 +109,62 @@ public class Client {
     private void processCommands() {
 
         while (!queue.isEmpty()) {
-            var mgs = queue.poll();
+            var packet = queue.poll();
             //TODO Packets
-            uniqueContext.queueMessage(mgs);
+            uniqueContext.queueMessage(packet);
         }
 
     }
 
-    public void launch() throws IOException {
+    public void connectToServer() {
+        var buffer = new LoginAnonymousPacket(login).toByteBuffer();
+
+        var context = key.attachment();
+
+        try {
+            buffer.flip();
+            sc.write(buffer);
+            buffer.clear();
+            while (sc.read(buffer) != -1) {
+                if (OpCodeHandler.getOpCode(buffer) == OPCODE.LOGIN_ACCEPTED) {
+                    launch();
+                    break;
+                } else {
+                    System.out.println("User Not Valid");
+                    return;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void initiate() throws IOException {
         sc.configureBlocking(false);
-        var key = sc.register(selector, SelectionKey.OP_CONNECT);
+        key = sc.register(selector, SelectionKey.OP_CONNECT);
+        sc.connect(serverAddress);
         uniqueContext = new Context(key);
         key.attach(uniqueContext);
-        sc.connect(serverAddress);
+        logger.info("Connection Established to : " + this.serverAddress);
+    }
+
+    public void disconnect() {
+        connectToServer.interrupt();
+        console.interrupt();
+        main.interrupt();
+    }
+
+    public void launch() throws IOException {
+
+        //il faut d'abord faire le login
+        //connectToServer();
+        initiate();
+
+        //TODO
+
 
         console.start();
-
         while (!Thread.interrupted()) {
             try {
                 selector.select(this::treatKey);
@@ -105,6 +173,7 @@ public class Client {
                 throw tunneled.getCause();
             }
         }
+        connectToServer.start();
     }
 
     private void treatKey(SelectionKey key) {
@@ -134,11 +203,28 @@ public class Client {
     }
 
     public static void main(String[] args) throws NumberFormatException, IOException {
+
         if (args.length != 3) {
             usage();
             return;
         }
-        new Client(args[0], new InetSocketAddress(args[1], Integer.parseInt(args[2]))).launch();
+        
+        //login anonymous
+        //server:port login
+
+        //login authentifié
+        //server:port login password
+
+        var login = Commander.getLogin(args);
+        var server = new InetSocketAddress(login[0], Integer.parseInt(login[1]));
+
+        if (login.length == 3) {
+            var pass = login[2];
+            new Client(args[0], pass, server).launch();
+        } else {
+            new Client(args[0], server).launch();
+        }
+
     }
 
     private static void usage() {
