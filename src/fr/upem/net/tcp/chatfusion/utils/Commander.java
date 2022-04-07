@@ -44,9 +44,6 @@ public class Commander {
         }
     }
 
-    public static void main(String[] args) {
-
-    }
 }
 
 //javba redex
