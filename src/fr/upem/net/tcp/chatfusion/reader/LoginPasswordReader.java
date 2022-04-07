@@ -1,39 +1,42 @@
 package fr.upem.net.tcp.chatfusion.reader;
 
-import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
-import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
 import fr.upem.net.tcp.chatfusion.packet.LoginPasswordPacket;
-import fr.upem.net.tcp.chatfusion.packet.StringPacket;
 
 import java.nio.ByteBuffer;
 
 import static fr.upem.net.tcp.chatfusion.reader.Reader.ProcessStatus.*;
 
-public class LoginAnonymousReader implements Reader<LoginAnonymousPacket> {
+public class LoginPasswordReader implements Reader<LoginPasswordPacket> {
+
 
     private enum State {
-        DONE, WAITING_USERNAME, ERROR
+        DONE, WAITING_USERNAME, WAITING_PASSWORD, ERROR
     }
 
     private State state = State.WAITING_USERNAME;
     private final StringReader stringReader = new StringReader();
-    private LoginAnonymousPacket login;
+    private LoginPasswordPacket message;
 
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
-        String string = null;
+
+        String login = null;
+        String password;
 
         if (state == State.WAITING_USERNAME) {
-            string = readString(buffer, State.DONE);
+            login = readString(buffer, State.WAITING_PASSWORD);
+        }
+        if (state == State.WAITING_PASSWORD) {
+            password = readString(buffer, State.DONE);
         } else {
             return REFILL;
         }
 
-        if (string == null) {
+        if (login == null || password == null) {
             return ERROR;
         }
 
-        login = new LoginAnonymousPacket(string);
+        message = new LoginPasswordPacket(login, password);
 
         state = State.DONE;
 
@@ -45,7 +48,7 @@ public class LoginAnonymousReader implements Reader<LoginAnonymousPacket> {
         if (status == DONE) {
             var value = stringReader.get();
             //stringReader.reset();
-            login = null;
+            message = null;
             stringReader.reset();
             state = nextState;
             return value.message();
@@ -53,13 +56,17 @@ public class LoginAnonymousReader implements Reader<LoginAnonymousPacket> {
     }
 
     @Override
-    public LoginAnonymousPacket get() {
-        return login;
+    public LoginPasswordPacket get() {
+        if (state != State.DONE) {
+            throw new IllegalStateException();
+        }
+        return message;
     }
 
     @Override
     public void reset() {
+        state = State.WAITING_USERNAME;
         stringReader.reset();
+        message = null;
     }
-
 }

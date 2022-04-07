@@ -15,6 +15,25 @@ import java.nio.ByteBuffer;
  * msg (STRING<=1024)
  */
 public class PrivateMessagePacket implements Packet {
+    public String serverSource() {
+        return serverSource;
+    }
+
+    public String loginSource() {
+        return loginSource;
+    }
+
+    public String severDestination() {
+        return severDestination;
+    }
+
+    public String loginDestination() {
+        return loginDestination;
+    }
+
+    public String message() {
+        return message;
+    }
 
     private final OPCODE opcode;
     private final String serverSource;

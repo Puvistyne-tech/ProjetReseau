@@ -1,6 +1,7 @@
 package fr.upem.net.tcp.chatfusion.client;
 
 import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
+import fr.upem.net.tcp.chatfusion.packet.LoginPasswordPacket;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
 import fr.upem.net.tcp.chatfusion.reader.Message;
 import fr.upem.net.tcp.chatfusion.reader.OpCodeHandler;
@@ -50,8 +51,9 @@ public class Client {
 
         this.sc = SocketChannel.open();
         this.selector = Selector.open();
+        this.main = null;
         this.console = new Thread(this::consoleRun);
-        this.connectToServer=new Thread(this::connectToServer);
+        this.connectToServer = new Thread(this::connectToServer);
     }
 
     public Client(String login, String password, InetSocketAddress serverAddress) throws IOException {
@@ -64,7 +66,8 @@ public class Client {
         this.sc = SocketChannel.open();
         this.selector = Selector.open();
         this.console = new Thread(this::consoleRun);
-        this.connectToServer=new Thread(this::connectToServer);
+        this.main = null;
+        this.connectToServer = new Thread(this::connectToServer);
     }
 
     private void consoleRun() {
@@ -76,7 +79,7 @@ public class Client {
                 }
             }
             logger.info("Console thread stopping");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException | IOException e) {
             logger.info("Console thread has been interrupted");
         }
     }
@@ -88,14 +91,14 @@ public class Client {
      * @throws InterruptedException
      */
 
-    private void sendCommand(String msg) throws InterruptedException {
+    private void sendCommand(String msg) throws InterruptedException, IOException {
 
         if (!queue.isEmpty()) return;
 
         synchronized (lock) {
 
-            var t = Commander.commande(msg);
-            System.out.println(t.toByteBuffer());
+            var t = Commander.commande(sc.getLocalAddress().toString(),"server",msg);
+            System.out.println(t);
             queue.put(t);
 
             selector.wakeup(); // Force le selector à sortir de selectojkr.select, pour pouvoir effectuer l'interaction correctement entre la thread console et la thread main
@@ -117,24 +120,15 @@ public class Client {
     }
 
     public void connectToServer() {
-        var buffer = new LoginAnonymousPacket(login).toByteBuffer();
-
-        var context = key.attachment();
-
         try {
-            buffer.flip();
-            sc.write(buffer);
-            buffer.clear();
-            while (sc.read(buffer) != -1) {
-                if (OpCodeHandler.getOpCode(buffer) == OPCODE.LOGIN_ACCEPTED) {
-                    launch();
-                    break;
-                } else {
-                    System.out.println("User Not Valid");
-                    return;
-                }
+            if (authentified) {
+                queue.put(new LoginPasswordPacket(login, password));
             }
-        } catch (IOException e) {
+
+            queue.put(new LoginAnonymousPacket(login));
+
+            selector.wakeup();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -146,7 +140,7 @@ public class Client {
         sc.connect(serverAddress);
         uniqueContext = new Context(key);
         key.attach(uniqueContext);
-        logger.info("Connection Established to : " + this.serverAddress);
+        logger.info("Connection Established to : " + this.serverAddress + "\nWaiting for the Authentification");
     }
 
     public void disconnect() {
@@ -161,6 +155,7 @@ public class Client {
         //connectToServer();
         initiate();
 
+        connectToServer.start();
         //TODO
 
 
@@ -173,7 +168,6 @@ public class Client {
                 throw tunneled.getCause();
             }
         }
-        connectToServer.start();
     }
 
     private void treatKey(SelectionKey key) {
@@ -208,7 +202,7 @@ public class Client {
             usage();
             return;
         }
-        
+
         //login anonymous
         //server:port login
 
@@ -218,7 +212,7 @@ public class Client {
         var login = Commander.getLogin(args);
         var server = new InetSocketAddress(login[0], Integer.parseInt(login[1]));
 
-        if (login.length == 3) {
+        if (login.length == 4) {
             var pass = login[2];
             new Client(args[0], pass, server).launch();
         } else {

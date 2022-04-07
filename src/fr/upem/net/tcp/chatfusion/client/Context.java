@@ -1,11 +1,9 @@
 package fr.upem.net.tcp.chatfusion.client;
 
 import fr.upem.net.tcp.chatfusion.context.IContext;
+import fr.upem.net.tcp.chatfusion.packet.LoginPasswordPacket;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
-import fr.upem.net.tcp.chatfusion.reader.OpCodeHandler;
-import fr.upem.net.tcp.chatfusion.reader.PrivateMessageReader;
-import fr.upem.net.tcp.chatfusion.reader.PublicMessageReader;
-import fr.upem.net.tcp.chatfusion.reader.Reader;
+import fr.upem.net.tcp.chatfusion.reader.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -45,7 +43,7 @@ public class Context implements IContext {
 
 
         var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
-        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
+        //if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
             for (; ; ) {
 
                 Reader<? extends Packet> reader = null;
@@ -53,6 +51,13 @@ public class Context implements IContext {
                 switch (opCodeReader) {
                     case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
                     case MESSAGE_PRIVATE -> reader = new PrivateMessageReader();
+                    case LOGIN_ANONYMOUS -> reader = new LoginAnonymousReader();
+                    case LOGIN_PASSWORD -> reader = new LoginPasswordReader();
+                    case LOGIN_ACCEPTED -> reader = new StringReader();
+                    case LOGIN_REFUSED -> {
+                        silentlyClose();
+                        return;
+                    }
                 }
 
                 assert reader != null;
