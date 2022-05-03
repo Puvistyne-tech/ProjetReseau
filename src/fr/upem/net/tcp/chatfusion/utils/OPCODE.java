@@ -7,7 +7,6 @@ public enum OPCODE {
     LOGIN_REFUSED,
     MESSAGE_PUBLIC,
     MESSAGE_PRIVATE,
-    FILE_PUBLIC,
     FILE_PRIVATE,
     FUSION_INIT,
     FUSION_INIT_OK,
@@ -16,5 +15,13 @@ public enum OPCODE {
     FUSION_REQUEST,
     FUSION_REQUEST_RESP,
     FUSION_CHANGE_LEADER,
-    FUSION_MERGE
+    FUSION_MERGE,
+    //TODO
+    ERROR,
+    SHUTDOWN;
+
+     public static OPCODE byteToOpcode(Byte b) {
+        return OPCODE.values()[b];
+    }
 }
+

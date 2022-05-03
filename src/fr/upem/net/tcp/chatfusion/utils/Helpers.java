@@ -40,7 +40,7 @@ public class Helpers {
 				System.out.println("\tKey for ServerSocketChannel : " + interestOpsToString(key));
 			} else {
 				var sc = (SocketChannel) channel;
-				System.out.println("\tKey for Client " + remoteAddressToString(sc) + " : " + interestOpsToString(key));
+				System.out.println("\tKey for ClientChatFusion " + remoteAddressToString(sc) + " : " + interestOpsToString(key));
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public class Helpers {
 		} else {
 			var sc = (SocketChannel) channel;
 			System.out.println(
-					"\tClient " + remoteAddressToString(sc) + " can perform : " + possibleActionsToString(key));
+					"\tClientChatFusion " + remoteAddressToString(sc) + " can perform : " + possibleActionsToString(key));
 		}
 	}
 

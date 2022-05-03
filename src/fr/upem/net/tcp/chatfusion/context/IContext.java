@@ -4,6 +4,7 @@ import fr.upem.net.tcp.chatfusion.packet.Packet;
 
 
 import java.io.IOException;
+import java.nio.channels.SelectionKey;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -20,6 +21,6 @@ public interface IContext {
     void doRead() throws Exception;
     void doWrite() throws IOException;
     void silentlyClose();
-
+    SelectionKey getKey();
 
 }
