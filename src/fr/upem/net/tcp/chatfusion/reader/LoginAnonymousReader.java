@@ -1,9 +1,7 @@
 package fr.upem.net.tcp.chatfusion.reader;
 
 import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
-import fr.upem.net.tcp.chatfusion.packet.LoginAnonymousPacket;
-import fr.upem.net.tcp.chatfusion.packet.LoginPasswordPacket;
-import fr.upem.net.tcp.chatfusion.packet.StringPacket;
+
 
 import java.nio.ByteBuffer;
 
@@ -21,6 +19,9 @@ public class LoginAnonymousReader implements Reader<LoginAnonymousPacket> {
 
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
+        if (state == State.DONE || state == State.ERROR) {
+            throw new IllegalStateException();
+        }
         String string = null;
 
         if (state == State.WAITING_USERNAME) {
@@ -54,12 +55,17 @@ public class LoginAnonymousReader implements Reader<LoginAnonymousPacket> {
 
     @Override
     public LoginAnonymousPacket get() {
+        if (state != State.DONE) {
+            throw new IllegalStateException();
+        }
         return login;
     }
 
     @Override
     public void reset() {
+        state = State.WAITING_USERNAME;
         stringReader.reset();
+        login = null;
     }
 
 }

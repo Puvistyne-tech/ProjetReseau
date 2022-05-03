@@ -2,6 +2,7 @@ package fr.upem.net.tcp.chatfusion.packet;
 
 import fr.upem.net.tcp.chatfusion.buffer.Buffer;
 import fr.upem.net.tcp.chatfusion.utils.OPCODE;
+import fr.upem.net.tcp.chatfusion.visitor.IPacketVisitor;
 
 import java.nio.ByteBuffer;
 
@@ -14,8 +15,22 @@ import java.nio.ByteBuffer;
  */
 public class PublicMessagePacket implements Packet {
 
+    public String server() {
+        return server;
+    }
+
+    public String login() {
+        return login;
+    }
+
+    public String message() {
+        return message;
+    }
+
     private final OPCODE opcode;
     private final String server;
+
+
     private final String login;
     private final String message;
 
@@ -47,5 +62,18 @@ public class PublicMessagePacket implements Packet {
                 ", login='" + login + '\'' +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    @Override
+    public void accept(IPacketVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public String from() {
+        return login;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

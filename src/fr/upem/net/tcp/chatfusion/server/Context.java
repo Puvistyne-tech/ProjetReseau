@@ -4,7 +4,7 @@ package fr.upem.net.tcp.chatfusion.server;
 import fr.upem.net.tcp.chatfusion.context.IContext;
 import fr.upem.net.tcp.chatfusion.packet.*;
 import fr.upem.net.tcp.chatfusion.reader.*;
-import fr.upem.net.tcp.chatfusion.utils.FileHander;
+import fr.upem.net.tcp.chatfusion.visitor.ServerVisitor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -19,7 +19,7 @@ public class Context implements IContext {
     Logger logger = Logger.getLogger(Context.class.getName());
 
 
-    private String login;
+    public String login;
     private final SelectionKey key;
     private final SocketChannel sc;
     private final Server server;
@@ -27,12 +27,22 @@ public class Context implements IContext {
     private final ByteBuffer bufferOut = ByteBuffer.allocate(BUFFER_SIZE);
     private final ArrayDeque<Packet> queue = new ArrayDeque<>();
     private boolean closed = false;
+    private ServerVisitor visitor;
+
+    public Server getServer() {
+        return this.server;
+    }
+
+    public SocketChannel getSocketChannel() {
+        return this.sc;
+    }
 
     public Context(Server server, SelectionKey key) {
         this.key = key;
         this.sc = (SocketChannel) key.channel();
         this.server = server;
-//        this.login
+
+        visitor = new ServerVisitor(this);
     }
 
     public boolean isClosed() {
@@ -48,42 +58,78 @@ public class Context implements IContext {
     @Override
     public void processIn() {
 
-        var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
-//        if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
+//        var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
+        var reader = new PacketReader();
         for (; ; ) {
 
-            Reader<? extends Packet> reader = null;
+//            var status=packetReader.process(bufferIn);
+//            switch (status){
+//                case ERROR:
+//                    silentlyClose();
+//                    return;
+//                case REFILL:
+//                    return;
+//                case DONE:
+//                    Packet packet=packetReader.get();
+//                    packetReader.reset();
+//                    treatPacket(packet);
+//                    break;
+//            }
 
-            switch (opCodeReader) {
-                case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
-                case MESSAGE_PRIVATE -> {
-                    handlePrivateMessage(new PrivateMessageReader());
-                    return;
-                }
-                case LOGIN_ANONYMOUS -> {
-                    handleAnonymousLogin(new LoginAnonymousReader());
-                    return;
-                }
-                case LOGIN_PASSWORD -> {
-                    handleLoginPassword(new LoginPasswordReader());
-                    return;
-                }
-            }
-
+//            Reader<? extends Packet> reader = null;
             assert reader != null;
             Reader.ProcessStatus status = reader.process(bufferIn);
             switch (status) {
                 case DONE:
                     var value = reader.get();
-                    server.broadcast(value);
+                    value.accept(visitor);
                     reader.reset();
-                    break;
+                    return;
                 case REFILL:
                     return;
                 case ERROR:
                     silentlyClose();
                     return;
             }
+//            switch (opCodeReader) {
+//                case MESSAGE_PUBLIC -> {
+//                    //reader = new PublicMessageReader();
+//                    handlePublicMessage(new PublicMessageReader());
+//                    return;
+//                }
+//                case MESSAGE_PRIVATE -> {
+//                    handlePrivateMessage(new PrivateMessageReader());
+//                    return;
+//                }
+//                case LOGIN_ANONYMOUS -> {
+//                    handleAnonymousLogin(new LoginAnonymousReader());
+//                    return;
+//                }
+//                case LOGIN_PASSWORD -> {
+//                    handleLoginPassword(new LoginPasswordReader());
+//                    return;
+//                }
+//
+//            }
+
+
+        }
+    }
+
+    private void handlePublicMessage(PublicMessageReader reader) {
+        assert reader != null;
+        Reader.ProcessStatus status = reader.process(bufferIn);
+        switch (status) {
+            case DONE:
+                var value = reader.get();
+                server.broadcast(value);
+                reader.reset();
+                break;
+            case REFILL:
+                return;
+            case ERROR:
+                silentlyClose();
+                return;
         }
     }
 
@@ -94,12 +140,20 @@ public class Context implements IContext {
         if (status == Reader.ProcessStatus.DONE) {
             var prvtMsgP = reader.get();
 
+//            var p=new PublicMessagePacket(prvtMsgP.serverSource(),prvtMsgP.loginSource(),prvtMsgP.message());
+            //var p=new PrivateMessagePacket(prvtMsgP);
 
-            //this.server.addClients(client, sc.getRemoteAddress());
-            server.sendTo(key, prvtMsgP);
+            var loginDest = prvtMsgP.loginDestination();
+            var kk = server.getClientAddress(loginDest);
+            if (kk != null) {
+                //var att=kk.
+                server.sendTo(kk, prvtMsgP);
+            }
+            reader.reset();
         } else {
             silentlyClose();
         }
+        reader.reset();
     }
 
     private void handleLoginPassword(LoginPasswordReader reader) {
@@ -110,12 +164,14 @@ public class Context implements IContext {
             if (status == Reader.ProcessStatus.DONE) {
                 var clientP = reader.get();
                 var client = clientP.getLogin();
-
+                reader.reset();
 //                if (FileHander.checkIfUserExist(client) || server.ifClientAlreadyConnected(client)) {
                 if (server.ifClientAlreadyConnected(client)) {
                     server.sendTo(key, new LoginRefusedPacket());
                     silentlyClose();
                 } else {
+                    this.login = client;
+
                     this.server.addClients(client, sc.getRemoteAddress());
                     server.sendTo(key, new LoginAcceptedPacket(server.getLeaderName()));
                 }
@@ -124,6 +180,8 @@ public class Context implements IContext {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            reader.reset();
         }
     }
 
@@ -135,18 +193,22 @@ public class Context implements IContext {
             if (status == Reader.ProcessStatus.DONE) {
                 var clientP = reader.get();
                 var client = clientP.getLogin();
-
-                if (FileHander.checkIfUserExist(client)) {
+                reader.reset();
+                if (server.ifClientAlreadyConnected(client)) {
                     server.sendTo(key, new LoginRefusedPacket());
+                    silentlyClose();
+                } else {
+                    this.login = client;
+                    this.server.addClients(client, sc.getRemoteAddress());
+                    server.sendTo(key, new LoginAcceptedPacket(server.getLeaderName()));
                 }
-
-                this.server.addClients(client, sc.getRemoteAddress());
-                server.sendTo(key, new LoginAcceptedPacket(server.getLeaderName()));
             } else {
                 silentlyClose();
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            reader.reset();
         }
     }
 
@@ -162,45 +224,10 @@ public class Context implements IContext {
             }
         }
 
-//        while (!queue.isEmpty() && bufferOut.hasRemaining()) {
-//            var msg = queue.peek();
-//            if (!msg.hasRemaining()) {
-//                queue.poll();
-//                continue;
-//            }
-//            if (msg.remaining() <= bufferOut.remaining()) {
-//                bufferOut.put(msg);
-//            } else {
-//                var oldLimit = msg.limit();
-//                msg.limit(bufferOut.remaining());
-//                bufferOut.put(msg);
-//                msg.limit(oldLimit);
-//            }
-//        }
-//        private void processOut() {
-//            var it = queue.iterator();
-//            while (it.hasNext()) {
-//                var msgbuff = it.next();
-//                if (bufferOut.remaining() < msgbuff.remaining())
-//                    continue;
-//                bufferOut.put(msgbuff);
-//                it.remove();
-//            }
-//        }
     }
 
     public void queueMessage(Packet packet) {
 
-//        var username = CHARSET.encode(packets.username());
-//
-//        var text = CHARSET.encode(packets.text());
-//        var buffer = ByteBuffer.allocate(username.remaining() + text.remaining() + Integer.BYTES * 2);
-//        buffer.putInt(username.remaining())
-//                .put(username)
-//                .putInt(text.remaining())
-//                .put(text)
-//                .flip();
-//        queue.offer(buffer);
         queue.add(packet);
         processOut();
         updateInterestOps();
@@ -227,7 +254,6 @@ public class Context implements IContext {
                 silentlyClose();
             }
         }
-//        key.interestOps(newIterOpt);
 
     }
 
@@ -241,6 +267,7 @@ public class Context implements IContext {
             silentlyClose();
             return;
         }
+        System.out.println("==> reading " + bufferIn);
         processIn();
         updateInterestOps();
 
@@ -249,7 +276,7 @@ public class Context implements IContext {
     @Override
     public void doWrite() throws IOException {
         bufferOut.flip();
-        System.out.println("<==Sending something...");
+        System.out.println("<== Sending something..." + bufferOut);
         sc.write(bufferOut);
         bufferOut.compact();
         processOut();
@@ -264,6 +291,11 @@ public class Context implements IContext {
         } catch (IOException e) {
             // ignore exception
         }
+    }
+
+    @Override
+    public SelectionKey getKey() {
+        return this.key;
     }
 
 

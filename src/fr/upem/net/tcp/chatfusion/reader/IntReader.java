@@ -10,8 +10,6 @@ public class IntReader implements Reader<IntPacket> {
         DONE, WAITING, ERROR
     }
 
-    ;
-
     private State state = State.WAITING;
     private final ByteBuffer internalBuffer = ByteBuffer.allocate(Integer.BYTES); // write-mode
     private IntPacket value;

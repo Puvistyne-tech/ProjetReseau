@@ -1,5 +1,7 @@
 package fr.upem.net.tcp.chatfusion.server;
 
+import fr.upem.net.tcp.chatfusion.client.Client;
+import fr.upem.net.tcp.chatfusion.packet.FusionInitPacket;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
 import fr.upem.net.tcp.chatfusion.utils.Helpers;
 
@@ -8,15 +10,10 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.Channel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Scanner;
+import java.nio.channels.*;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,21 +27,26 @@ public class Server {
     private final ServerSocketChannel serverSocketChannel;
 
     private final HashMap<String, SocketAddress> servers = new HashMap<>();
+    private final List<String> serverList = new ArrayList<>();
 
     private final Selector selector;
 
-    private final Thread console;
-    private final Thread fusion;
+    private Thread console;
+    private Thread fusion;
     private final ArrayBlockingQueue<Commands> commandQueue = new ArrayBlockingQueue<>(1);
+    private final BlockingQueue<Packet> queue = new ArrayBlockingQueue<>(10);
+
 
     private final Map<String, SocketAddress> clients = new HashMap<String, SocketAddress>();
+    private final List<Client> clientList =new ArrayList<>();
 
     private final Object lock = new Object();
 
-    public String getServerName(){
+    public String getServerName() {
         return this.name;
     }
-    public String getLeaderName(){
+
+    public String getLeaderName() {
         return this.leader;
     }
 
@@ -52,6 +54,7 @@ public class Server {
         this.name = Objects.requireNonNull(name);
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.bind(new InetSocketAddress(7777));
+//        serverSocketChannel.bind(null);
 
         System.out.println(serverSocketChannel.getLocalAddress());
         selector = Selector.open();
@@ -63,7 +66,39 @@ public class Server {
     }
 
     private void fusionRun() {
+        //console.interrupt();
+        System.out.println("entrez server name port");
+        var scanner = new Scanner(System.in);
+//        if (scanner.hasNextLine()) {
+//            var severname = scanner.nextLine();
+            var severname = "localhost";
+//            if (scanner.hasNextLine()) {
+//                var address = scanner.nextLine();
+                var address = "62709";
+                var p = new FusionInitPacket(severname, new InetSocketAddress(Integer.parseInt(address)), serverList.size(), serverList);
+                if (queue.isEmpty()){
+                    try {
+//                        serverSocketChannel.bind(new InetSocketAddress(Integer.parseInt(address)));
 
+                        queue.put(p);
+                        selector.wakeup();
+                        selector.keys().forEach(oneKey -> {
+                            var context = (Context) oneKey.attachment();
+                            var client = oneKey.channel();
+                            if (client == serverSocketChannel) {
+                                System.out.println(client);
+                                oneKey.interestOps(SelectionKey.OP_WRITE);
+//                                count.getAndIncrement();
+                            }
+                        });
+//                        updateInterestOps();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+//                }
+            }
+
+//        }
     }
 
     private enum Commands {
@@ -105,7 +140,10 @@ public class Server {
             case INFO -> showAllClients();
             case SHUTDOWN -> serverSocketChannel.close();
             case SHUTDOWNNOW -> shutdownServer();
-            case MERGE -> fusion.start();
+            case MERGE -> {
+                console.interrupt();
+                fusion.start();
+            }
             default -> logger.warning("Invalid Command");
         }
     }
@@ -138,8 +176,10 @@ public class Server {
     }
 
     public void addClients(String login, SocketAddress address) {
-        this.clients.put(login,address);
+
+        this.clients.put(login, address);
     }
+
 
     public void launch() throws IOException {
         serverSocketChannel.configureBlocking(false);
@@ -160,9 +200,9 @@ public class Server {
         }
     }
 
-    public boolean ifClientAlreadyConnected(String client){
+    public boolean ifClientAlreadyConnected(String client) {
         System.out.println(clients);
-        var t=clients.containsKey(client);
+        var t = clients.containsKey(client);
         System.out.println(t);
         return t;
     }
@@ -174,7 +214,6 @@ public class Server {
                 doAccept(key);
             }
         } catch (IOException ioe) {
-            // lambda call in select requires to tunnel IOException
             throw new UncheckedIOException(ioe);
         }
         try {
@@ -203,9 +242,8 @@ public class Server {
         sc.configureBlocking(false);
         var clientKey = sc.register(selector, SelectionKey.OP_READ);
 
-        var clientContext=new Context(this,clientKey);
+        var clientContext = new Context(this, clientKey);
         clientKey.attach(clientContext);
-        //addClients(,clientContext);
     }
 
     private void silentlyClose(SelectionKey key) {
@@ -217,6 +255,37 @@ public class Server {
         }
     }
 
+//    public SocketAddress getClientAddress(String clientName){
+//        var t=clients.get(clientName);
+//        SelectionKey res=null;
+//        for (var oneKey:selector.keys()){
+////        this.selector.keys().stream().forEach(oneKey->{
+//            var s=(SocketChannel)oneKey.channel();
+//            try {
+//                if (s.getRemoteAddress()==t){
+//                    SelectionKey oneKey1 = oneKey;
+//                    res= oneKey1;
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+////        );
+//        return clients.get(clientName);
+//    }
+    public SelectionKey getClientAddress(String clientName){
+        var t=clients.get(clientName);
+        SelectionKey res=null;
+        for (var oneKey:selector.keys()){
+            var context = (Context) oneKey.attachment();
+            var client = oneKey.channel();
+            if (client != serverSocketChannel && !context.isClosed()&&context.login.equals(clientName)) {
+                System.out.println(context);
+                res=oneKey;
+            }
+        }
+        return res;
+    }
 
     /**
      * Add a message to all connected clients queue
@@ -231,18 +300,26 @@ public class Server {
 
             var context = (Context) k.attachment();
 
-            if (context != null)
+            if (context != null) {
                 (context).queueMessage(packet);
+            }
 
 
         });
     }
 
-    public void sendTo(SelectionKey key,Packet packet){
+    public void sendTo(SelectionKey key, Packet packet) {
         var context = (Context) key.attachment();
 
         if (context != null)
             (context).queueMessage(packet);
+    }
+
+    public void sendTo(SocketAddress address, Packet packet) {
+//        var context = (Context) key.attachment();
+//
+//        if (context != null)
+//            (context).queueMessage(packet);
     }
 
     public static void main(String[] args) throws NumberFormatException, IOException {
@@ -255,7 +332,7 @@ public class Server {
     }
 
     private static void usage() {
-        System.out.println("Usage : ServerChatFusion name");
+        System.out.println("Usage : Server name");
     }
 
 }

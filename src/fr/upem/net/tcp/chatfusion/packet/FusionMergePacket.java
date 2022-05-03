@@ -7,13 +7,22 @@ import fr.upem.net.tcp.chatfusion.visitor.IPacketVisitor;
 import java.nio.ByteBuffer;
 
 /**
- * LOGIN_REFUSED(3)
- * OPCODE 3
+ * FUSION_MERGE(15)
+ * 15 (OPCODE)
+ * name (STRING)
  */
-public class LoginRefusedPacket implements Packet {
+public class FusionMergePacket implements Packet {
+    private final String name;
+
+    public FusionMergePacket(String name) {
+        this.name = name;
+    }
+
     @Override
     public ByteBuffer toByteBuffer() {
-        return new Buffer.Builder(OPCODE.LOGIN_REFUSED).build();
+        return new Buffer.Builder(OPCODE.FUSION_MERGE)
+                .addString(name)
+                .build();
     }
 
     @Override

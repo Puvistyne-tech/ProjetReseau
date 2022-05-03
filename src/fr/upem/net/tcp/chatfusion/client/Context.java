@@ -1,9 +1,9 @@
 package fr.upem.net.tcp.chatfusion.client;
 
 import fr.upem.net.tcp.chatfusion.context.IContext;
-import fr.upem.net.tcp.chatfusion.packet.LoginPasswordPacket;
 import fr.upem.net.tcp.chatfusion.packet.Packet;
 import fr.upem.net.tcp.chatfusion.reader.*;
+import fr.upem.net.tcp.chatfusion.visitor.ClientVisitor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -11,8 +11,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 
 
@@ -20,16 +18,22 @@ public class Context implements IContext {
     static private final int BUFFER_SIZE = 10_000;
     private final static Charset CHARSET = StandardCharsets.UTF_8;
 
+    private String serverName;
+
     private final SelectionKey key;
     private final SocketChannel sc;
     private final ByteBuffer bufferIn = ByteBuffer.allocate(BUFFER_SIZE);
     private final ByteBuffer bufferOut = ByteBuffer.allocate(BUFFER_SIZE);
     public final ArrayDeque<Packet> queue = new ArrayDeque<>();
     private boolean closed = false;
+    private final ClientVisitor visitor;
+
+//    private ClientVisitor visitor;
 
     public Context(SelectionKey key) {
         this.key = key;
         this.sc = (SocketChannel) key.channel();
+        visitor = new ClientVisitor(this);
     }
 
     /**
@@ -41,83 +45,65 @@ public class Context implements IContext {
 
     public void processIn() {
 
+        var reader = new PacketReader();
 
-        var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
-        //if (opCodeReader.ordinal() >= 0 && opCodeReader.ordinal() < 20)
-            for (; ; ) {
+        for (; ; ) {
+//
+//            Reader<? extends Packet> reader = null;
+//            switch (opCodeReader) {
+//                case MESSAGE_PUBLIC:
+//                    publicMessagehandler(new PublicMessageReader());
+//                    visitor.visit(reader);
+//                    break;
+//                case MESSAGE_PRIVATE:
+//                    privateMessagehandler( new PrivateMessageReader());
+//                    break;
+//                case LOGIN_ANONYMOUS:
+//                    handleLoginAnonymous(new LoginAnonymousReader());
+//                    break;
+//                case LOGIN_PASSWORD:
+//                    handleLoginPassword(new LoginPasswordReader());
+//                    break;
+//                case LOGIN_ACCEPTED: {
+//                    reader = new StringReader();
+//                    if (reader.process(bufferIn) == Reader.ProcessStatus.DONE) {
+//                        this.server = ((StringPacket) reader.get()).message();
+//                        System.out.println("Authenticated with the server :: " + server);
+//                        reader.reset();
+//                        return;
+//                    }
+//                    break;
+//                }
+//                case LOGIN_REFUSED: {
+//                    System.out.println("Login Refused, Please Try again");
+//                    silentlyClose();
+//                    return;
+//                }
+//                default:
+//                    System.out.println("Something is wrong shutting down the client");
+//                    closed=true;
+//                    silentlyClose();
+//                    return;
+//            }
 
-                Reader<? extends Packet> reader = null;
-
-                switch (opCodeReader) {
-                    case MESSAGE_PUBLIC -> reader = new PublicMessageReader();
-                    case MESSAGE_PRIVATE -> reader = new PrivateMessageReader();
-                    case LOGIN_ANONYMOUS -> reader = new LoginAnonymousReader();
-                    case LOGIN_PASSWORD -> reader = new LoginPasswordReader();
-                    case LOGIN_ACCEPTED -> reader = new StringReader();
-                    case LOGIN_REFUSED -> {
-                        silentlyClose();
-                        return;
-                    }
-                }
-
-                assert reader != null;
-                Reader.ProcessStatus status = reader.process(bufferIn);
-                switch (status) {
-                    case DONE:
-                        var value = reader.get();
-                        var dtf = DateTimeFormatter.ofPattern("HH:mm");
-                        System.out.println(dtf.format(LocalDateTime.now()) + " ::: " + value.toString());
-                        reader.reset();
-                        break;
-                    case REFILL:
-                        return;
-                    case ERROR:
-                        silentlyClose();
-                        return;
-                }
-            }
-
-
-//        for (; ; ) {
-            /*
-
-            Reader<Packet> reader = new PublicMessageReader();
-
+            assert reader != null;
             Reader.ProcessStatus status = reader.process(bufferIn);
-            */
-//            var reader = O
-//            switch (status) {
-//
-//                case DONE:
-//                    var message = reader.get();
-//                    reader.reset();
-//
-//                    var dtf = DateTimeFormatter.ofPattern("HH:mm");
-//                    System.out.println(dtf.format(LocalDateTime.now()) + " from " + message.username() + " ::: " + message.text());
-//                    //System.out.println(message);
-//
-//                    break;
-//                case REFILL:
-//                    return;
-//                case ERROR:
-//                    silentlyClose();
-//                    return;
-//            }
-//        }
+            switch (status) {
+                case DONE:
+                    var value = reader.get();
+                    reader.reset();
+                    value.accept(visitor);
+                    return;
+                case REFILL:
+                    return;
+                case ERROR:
+                    silentlyClose();
+                    return;
+            }
+        }
 
-//        while (bufferIn.hasRemaining()) {
-//            switch (reader.process(bufferIn)) {
-//                case ERROR:
-//                    silentlyClose();
-//                case REFILL:
-//                    return;
-//                case DONE:
-//                    log(reader.get());
-//                    reader.reset();
-//                    break;
-//            }
-//        }
     }
+
 
     /**
      * Add a message to the message queue, tries to fill bufferOut and updateInterestOps
@@ -142,35 +128,7 @@ public class Context implements IContext {
         while (!queue.isEmpty() && bufferOut.hasRemaining()) {
             var message = queue.peek();
 
-//            var userBuffer = CHARSET.encode(message.username());
-            //          var textBuffer = CHARSET.encode(message.text());
-//            var tmp = message.text();
-//            System.out.println(message.text());
-//
-//
-//            var textBuffer = ByteBuffer.allocate(tmp.length());
-//            textBuffer.put(CHARSET.encode(tmp)).flip();
-//
-//            String nameServer = "DummyServer";
-//            var serverBuff = ByteBuffer.allocate(nameServer.length());
-//            serverBuff.put(CHARSET.encode(nameServer)).flip();
-//
-//            ByteBuffer mgsBuffer = ByteBuffer.allocate(serverBuff.capacity() + userBuffer.capacity() + textBuffer.capacity() + Integer.BYTES * 4);
-
             var mgsBuffer = message.toByteBuffer();
-//            if (mgsBuffer.capacity() >= 1024) {
-//                return;
-//            }
-
-//            mgsBuffer
-//                    .putInt(4)
-//                    .putInt(serverBuff.capacity())
-//                    .put(serverBuff)
-//                    .putInt(userBuffer.capacity())
-//                    .put(userBuffer)
-//                    .putInt(textBuffer.capacity())
-//                    .put(textBuffer)
-//                    .flip();
 
             if (mgsBuffer.remaining() <= bufferOut.remaining()) {
                 bufferOut.put(mgsBuffer);
@@ -216,6 +174,22 @@ public class Context implements IContext {
         }
     }
 
+
+    //Getters and Setters
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    @Override
+    public SelectionKey getKey() {
+        return this.key;
+    }
+
     /**
      * Performs the read action on sc
      * <p>
@@ -225,7 +199,7 @@ public class Context implements IContext {
      * @throws IOException
      */
     public void doRead() throws IOException {
-        // TODO
+
         var t = sc.read(bufferIn);
 
         if (t == 0) {
@@ -235,6 +209,7 @@ public class Context implements IContext {
             System.out.println("Connection closed");
             closed = true;
         }
+        System.out.println("==>client getting something" + bufferIn);
 
         processIn();
         updateInterestOps();
@@ -254,7 +229,7 @@ public class Context implements IContext {
 
         bufferOut.flip();
 
-        System.out.println(bufferOut);
+        System.out.println("<== sending" + bufferOut);
         sc.write(bufferOut);
 
         if (bufferOut.hasRemaining()) {
@@ -274,8 +249,8 @@ public class Context implements IContext {
             return;
         }
         //
-        key.interestOps(SelectionKey.OP_READ);
-        //updateInterestOps();
+//        key.interestOps(SelectionKey.OP_READ);
+        updateInterestOps();
     }
 
 
