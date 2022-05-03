@@ -19,9 +19,12 @@ public class LoginPasswordReader implements Reader<LoginPasswordPacket> {
 
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
+        if (state == State.DONE || state == State.ERROR) {
+            throw new IllegalStateException();
+        }
 
         String login = null;
-        String password;
+        String password=null;
 
         if (state == State.WAITING_USERNAME) {
             login = readString(buffer, State.WAITING_PASSWORD);
@@ -47,7 +50,6 @@ public class LoginPasswordReader implements Reader<LoginPasswordPacket> {
         var status = stringReader.process(buffer);
         if (status == DONE) {
             var value = stringReader.get();
-            //stringReader.reset();
             message = null;
             stringReader.reset();
             state = nextState;

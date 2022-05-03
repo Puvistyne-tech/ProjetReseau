@@ -3,6 +3,7 @@ package fr.upem.net.tcp.chatfusion.packet;
 
 import fr.upem.net.tcp.chatfusion.buffer.Buffer;
 import fr.upem.net.tcp.chatfusion.utils.OPCODE;
+import fr.upem.net.tcp.chatfusion.visitor.IPacketVisitor;
 
 import java.nio.ByteBuffer;
 
@@ -27,7 +28,40 @@ public class PrivateFilePacket implements Packet {
     private final String filename;
     private final int nbBlocks;
     private final int blockSize;
-    private final Byte bytes;
+
+    public ByteBuffer getBytes() {
+        return bytes;
+    }
+
+    private final ByteBuffer bytes;
+
+    public String getServerSource() {
+        return serverSource;
+    }
+
+    public String getLoginSource() {
+        return loginSource;
+    }
+
+    public String getSeverDestination() {
+        return severDestination;
+    }
+
+    public String getLoginDestination() {
+        return loginDestination;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public int getNbBlocks() {
+        return nbBlocks;
+    }
+
+    public int getBlockSize() {
+        return blockSize;
+    }
 
     public PrivateFilePacket(
             String serverSource,
@@ -35,7 +69,7 @@ public class PrivateFilePacket implements Packet {
             String severDestination,
             String loginDestination,
             String filename, int nbBlocks, int blockSize,
-            Byte bytes) {
+            ByteBuffer bytes) {
         this.opcode = OPCODE.FILE_PRIVATE;
         this.serverSource = Packet.verifySize(serverSource, 100);
         this.loginSource = Packet.verifySize(loginSource, 30);
@@ -57,7 +91,27 @@ public class PrivateFilePacket implements Packet {
                 .addString(filename)
                 .addInt(nbBlocks)
                 .addInt(blockSize)
-                .addBytes(bytes)
+                .addBuffer(bytes)
                 .build();
+    }
+
+    @Override
+    public String toString() {
+        return "PrivateFilePacket{" +
+                "opcode=" + opcode +
+                ", serverSource='" + serverSource + '\'' +
+                ", loginSource='" + loginSource + '\'' +
+                ", severDestination='" + severDestination + '\'' +
+                ", loginDestination='" + loginDestination + '\'' +
+                ", filename='" + filename + '\'' +
+                ", nbBlocks=" + nbBlocks +
+                ", blockSize=" + blockSize +
+                ", bytes=" + bytes +
+                '}';
+    }
+
+    @Override
+    public void accept(IPacketVisitor visitor) {
+        visitor.visit(this);
     }
 }

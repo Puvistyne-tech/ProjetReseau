@@ -5,28 +5,35 @@ import fr.upem.net.tcp.chatfusion.packet.StringPacket;
 
 import java.nio.ByteBuffer;
 
+import static fr.upem.net.tcp.chatfusion.reader.Reader.ProcessStatus.DONE;
+
 public class LoginAcceptedReader implements Reader<LoginAcceptedPacket> {
 
-    private enum State {
-        DONE, WAITING_SIZE, WAITING_STRING, ERROR
-    }
-
-    private State state = State.WAITING_SIZE;
-    private final IntReader intReader = new IntReader();
+//    private enum State {
+//        DONE, WAITING_SERVER_NAME, ERROR
+//    }
+//
+//    private State state = State.WAITING_SERVER_NAME;
+    private final StringReader stringReader = new StringReader();
     private StringPacket value;
 
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
-        return null;
+
+        return stringReader.process(buffer);
     }
+
 
     @Override
     public LoginAcceptedPacket get() {
-        return null;
+
+        return new LoginAcceptedPacket(stringReader.get().message());
     }
 
     @Override
     public void reset() {
-
+//        state = State.WAITING_SERVER_NAME;
+        stringReader.reset();
+        value = null;
     }
 }

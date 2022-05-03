@@ -1,10 +1,9 @@
 package fr.upem.net.tcp.chatfusion.reader;
 
-import fr.upem.net.tcp.chatfusion.packet.OpCodePacket;
-
+import fr.upem.net.tcp.chatfusion.utils.OPCODE;
 import java.nio.ByteBuffer;
 
-public class OpCodeReader implements Reader<OpCodePacket> {
+public class OpCodeReader implements Reader<OPCODE> {
 
     private enum State {
         DONE, WAITING, ERROR
@@ -12,7 +11,8 @@ public class OpCodeReader implements Reader<OpCodePacket> {
 
     private State state = State.WAITING;
     private final ByteBuffer internalBuffer = ByteBuffer.allocate(Byte.BYTES); // write-mode
-    private OpCodePacket value;
+//    private OpCodePacket value;
+    private OPCODE value;
 
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
@@ -42,12 +42,15 @@ public class OpCodeReader implements Reader<OpCodePacket> {
 
         state = State.DONE;
         internalBuffer.flip();
-        value = new OpCodePacket(internalBuffer.get());
+//        var op=internalBuffer.get();
+//        var t= OPCODE.values()[op];
+//        value = new OpCodePacket(OPCODE.byteToOpcode(internalBuffer.get()));
+        value = OPCODE.byteToOpcode(internalBuffer.get());
         return ProcessStatus.DONE;
     }
 
     @Override
-    public OpCodePacket get() {
+    public OPCODE get() {
         if (state != State.DONE) {
             throw new IllegalStateException();
         }
@@ -57,6 +60,7 @@ public class OpCodeReader implements Reader<OpCodePacket> {
     @Override
     public void reset() {
         state = State.WAITING;
+        value = null;
         internalBuffer.clear();
     }
 }

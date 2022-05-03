@@ -2,6 +2,7 @@ package fr.upem.net.tcp.chatfusion.packet;
 
 import fr.upem.net.tcp.chatfusion.buffer.Buffer;
 import fr.upem.net.tcp.chatfusion.utils.OPCODE;
+import fr.upem.net.tcp.chatfusion.visitor.IPacketVisitor;
 
 import java.nio.ByteBuffer;
 
@@ -23,7 +24,12 @@ public class LoginAnonymousPacket implements Packet {
                 .build();
     }
 
-    public String getLogin(){
+    @Override
+    public void accept(IPacketVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    public String getLogin() {
         return this.login;
     }
 }

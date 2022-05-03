@@ -1,6 +1,7 @@
 package fr.upem.net.tcp.chatfusion.packet;
 
 import fr.upem.net.tcp.chatfusion.exception.SizeNotRespectedException;
+import fr.upem.net.tcp.chatfusion.visitor.IPacketVisitor;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -18,7 +19,13 @@ public interface Packet {
      *
      * @return returns a Bytebuffer contains the data related to its packet
      */
-    ByteBuffer toByteBuffer() ;
+    ByteBuffer toByteBuffer();
+
+//    void accept(IPacketVisitor visitor);
+
+    String toString();
+
+    void accept(IPacketVisitor visitor);
 
     /**
      * Send the size of the buffer

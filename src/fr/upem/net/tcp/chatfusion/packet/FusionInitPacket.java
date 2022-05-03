@@ -2,9 +2,13 @@ package fr.upem.net.tcp.chatfusion.packet;
 
 import fr.upem.net.tcp.chatfusion.buffer.Buffer;
 import fr.upem.net.tcp.chatfusion.utils.OPCODE;
+import fr.upem.net.tcp.chatfusion.visitor.IPacketVisitor;
+import org.w3c.dom.ls.LSInput;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * FUSION_INIT(8) = 8 (OPCODE)
@@ -19,19 +23,20 @@ public class FusionInitPacket implements Packet {
     private final String name;
     private final SocketAddress address;
     private final int nbMembers;
-    private final String[] members;
+    private final List<String> members;
 
     public FusionInitPacket(
             String name,
             SocketAddress address,
             int nbMembers,
-            String... members) {
+            List<String> members) {
         this.opcode = OPCODE.FUSION_INIT;
         this.name = Packet.verifySize(name, 100);
         this.address = address;
         this.nbMembers = nbMembers;
         this.members = members;
     }
+
 
     @Override
     public ByteBuffer toByteBuffer() {
@@ -42,12 +47,17 @@ public class FusionInitPacket implements Packet {
             tmpBuff.put(tmp);
         }
 
-        var buffer = new Buffer.Builder(opcode)
+        return new Buffer.Builder(opcode)
                 .addStringPacket(new StringPacket(name))
                 .addStringPacket(new StringPacket(address.toString()))
                 .addInt(nbMembers)
                 .addBuffer(tmpBuff)
                 .build();
-        return buffer;
+    }
+
+    @Override
+    public void accept(IPacketVisitor visitor) {
+        visitor.visit(this);
+
     }
 }

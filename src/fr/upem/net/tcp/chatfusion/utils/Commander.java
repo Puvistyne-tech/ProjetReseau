@@ -106,19 +106,16 @@ import java.util.regex.Pattern;
 
 public class Commander {
     private static final String PATTERN_MESSAGE = "([/|@]?)([A-Za-z0-9_]+):([A-Za-z0-9_]+)\s+(.*)";
-    private static final String PATTERN_PUBLIC_MESSAGE = "^(/@).*";
 
     public static Packet commande(String loginSrc, String serverSrc, String input) {
         var patternMessage = Pattern.compile(PATTERN_MESSAGE);
-        var patternPublicMessage = Pattern.compile(PATTERN_PUBLIC_MESSAGE);
 
         var matcherMessage = patternMessage.matcher(input);
-        var matcherPublicMessage = patternPublicMessage.matcher(input);
 
         if (matcherMessage.matches()) {
             // Message privé
-            var loginDest = matcherMessage.group(3);
-            var serverDest = matcherMessage.group(4);
+            var loginDest = matcherMessage.group(2);
+            var serverDest = matcherMessage.group(3);
 
             switch (matcherMessage.group(1)) {
                 case "@": {
@@ -127,31 +124,38 @@ public class Commander {
                     return new PrivateMessagePacket(
                             serverSrc, loginSrc, serverDest, loginDest, textMessage);
                 }
-                default:
-                    // Envoie d'un fichier (privé)
-                    var filePath = matcherMessage.group(4);
-                    // 3 DERNIERS ARGUMENTS A CHANGER
-                    return new PrivateFilePacket(
-                            serverSrc,
-                            loginSrc,
-                            serverDest,
-                            loginDest,
-                            filePath,
-                            1,
-                            1,
-                            Byte.valueOf("0001"));
+//                default:
+//                    // Envoie d'un fichier (privé)
+//                    var filePath = matcherMessage.group(4);
+//                    // 3 DERNIERS ARGUMENTS A CHANGER
+//                    return new PrivateFilePacket(
+//                            serverSrc,
+//                            loginSrc,
+//                            serverDest,
+//                            loginDest,
+//                            filePath,
+//                            1,
+//                            1,
+//                            Byte.valueOf("0001"));
             }
         }
         // Message publique
-        var textMessage = matcherPublicMessage.toString();
-        return new PublicMessagePacket(serverSrc, loginSrc, textMessage);
+        var textMessage = input;
+        return new PublicMessagePacket(serverSrc, loginSrc, input);
     }
         public static String[] getLogin(String[] args){
         //TODO login from the terminal
 
-        String[] login={"localhost","7777","DummyLogin"};
+        String[] login={args[1],args[2],args[0]};
         String[] loginPassword={"localhost","7777","pass","DummyLogin"};
+
+        //login;localhost:7777
+            //
+
 
         return loginPassword;
     }
 }
+
+//RFC
+// /path/to/file
