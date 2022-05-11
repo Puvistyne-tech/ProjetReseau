@@ -12,23 +12,32 @@ import java.util.Objects;
  * Interface which represents the different types of packets exchanged between the clients the servers
  */
 public interface Packet {
-    Charset CHARSET = StandardCharsets.UTF_8;
 
     /**
-     * The method to convert the packet to a byte buffer
-     *
-     * @return returns a Bytebuffer contains the data related to its packet
+     * Create a byte buffer according to this format
+     * @return the byte buffer
      */
     ByteBuffer toByteBuffer();
 
-//    void accept(IPacketVisitor visitor);
-
+    /**
+     * Create a string representation of the object.
+     * @return a string
+     */
     String toString();
 
+    /**
+     * Perform this operation on the given packet according to his
+     * actual type
+     * @param visitor the packet
+     */
     void accept(IPacketVisitor visitor);
 
     /**
-     * Send the size of the buffer
+     * Check if the input string size isn't greater than the expected
+     * size
+     * @param body the input string
+     * @param size the size expected
+     * @return     the string
      */
     static String verifySize(String body, int size) {
         Objects.requireNonNull(body);

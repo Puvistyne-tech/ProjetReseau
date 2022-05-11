@@ -1,0 +1,497 @@
+@startuml
+
+/' diagram meta data start
+config=CallConfiguration;
+{
+  "rootMethod": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion#connectToServer()",
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": true,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": true,
+    "cutInterfaceStructures": true,
+    "cutDataStructures": true,
+    "cutGetterAndSetter": true,
+    "cutConstructors": true
+  },
+  "graphTraversal": {
+    "forwardDepth": 3,
+    "backwardDepth": 3,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": true, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "ForwardOnly" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showMethodParametersTypes": false,
+    "showMethodParametersNames": false,
+    "showMethodReturnType": false,
+    "showPackageLevels": 2,
+    "showCallOrder": false,
+    "edgeMode": "MethodsOnly", // TypesOnly, MethodsOnly, TypesAndMethods, MethodsAndDirectTypeUsage
+    "showDetailedClassStructure": false
+  },
+  "rootClass": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="LR"
+    splines=polyline
+    
+
+'nodes 
+subgraph cluster_3596419 { 
+   	label=upem
+	labeljust=l
+	fillcolor="#ececec"
+	style=filled
+   
+   subgraph cluster_1360230834 { 
+   	label=net
+	labeljust=l
+	fillcolor="#d8d8d8"
+	style=filled
+   
+   subgraph cluster_1042234453 { 
+   	label=PublicMessagePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   PublicMessagePacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="PublicMessagePacket
+
+&#10;  Create a byte buffer according to MESSAGE format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1171374913 { 
+   	label=ClientChatFusion
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   ClientChatFusion1030237686XXXconnectToServer0[
+	label="+ connectToServer()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  Instanciates and put into the BlockingQueue the proper packet&#10;  according to the command&#10; "
+	penwidth=4
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1273207916 { 
+   	label=PrivateFilePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   PrivateFilePacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="PrivateFilePacket
+
+&#10;  Create a byte buffer according to FILE_PRIVATE format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1288723464 { 
+   	label=AContext
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   AContext1963540708XXXprocessOut0[
+	label="+ processOut()"
+	style=filled
+	fillcolor=white
+	tooltip="AContext
+
+&#10;  Try to fill bufferOut from the message queue&#10; "
+	fontcolor=darkgreen
+];
+
+AContext1963540708XXXqueueMessage1911998296[
+	label="+ queueMessage()"
+	style=filled
+	fillcolor=white
+	tooltip="AContext
+
+&#10;  Add a message to the message queue, tries to fill bufferOut and updateInterestOps&#10; &#10;  @param packet&#10; "
+	fontcolor=darkgreen
+];
+
+AContext1963540708XXXsilentlyClose0[
+	label="+ silentlyClose()"
+	style=filled
+	fillcolor=white
+	tooltip="AContext
+
+null"
+	fontcolor=darkgreen
+];
+
+AContext1963540708XXXupdateInterestOps0[
+	label="+ updateInterestOps()"
+	style=filled
+	fillcolor=white
+	tooltip="AContext
+
+&#10;  Update the interestOps of the key looking only at values of the boolean&#10;  closed and of both ByteBuffers.&#10;  \<p\>&#10;  The convention is that both buffers are in write-mode before the call to&#10;  updateInterestOps and after the call. Also it is assumed that process has&#10;  been be called just before updateInterestOps.&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1406290720 { 
+   	label=FusionChangeLeaderPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionChangeLeaderPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionChangeLeaderPacket
+
+&#10;  Create a byte buffer according to FUSION_CHANGE_LEADER format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1469548271 { 
+   	label=OpCodePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   OpCodePacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="OpCodePacket
+
+&#10;  Create a byte buffer according to OPCODE format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1493024389 { 
+   	label=FusionInitKOPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitKOPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitKOPacket
+
+&#10;  Create a byte buffer according to FUSION_INIT_KO format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1531365593 { 
+   	label=PrivateMessagePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   PrivateMessagePacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="PrivateMessagePacket
+
+&#10;  Create a byte buffer according to MESSAGE_PRIVATE format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1751192920 { 
+   	label=FusionRequestResPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionRequestResPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionRequestResPacket
+
+&#10;  Create a byte buffer according to FUSION_REQUEST_RESP format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_187222781 { 
+   	label=LoginAcceptedPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginAcceptedPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginAcceptedPacket
+
+&#10;  Create a byte buffer according to LOGIN_ACCEPTED format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1928202227 { 
+   	label=FusionInitOKPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitOKPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitOKPacket
+
+&#10;  Create a byte buffer according to FUSION_INIT_OK format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_214221964 { 
+   	label=StringPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   StringPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="StringPacket
+
+&#10;  Create a byte buffer according to STRING format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_2143020449 { 
+   	label=FusionMergePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionMergePacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionMergePacket
+
+&#10;  Create a byte buffer according to FUSION_MERGE format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_269669768 { 
+   	label=FusionRequestPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionRequestPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionRequestPacket
+
+&#10;  Create a byte buffer according to FUSION_REQUEST format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_416866033 { 
+   	label=LoginPasswordPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginPasswordPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginPasswordPacket
+
+&#10;  Create a byte buffer according to LOGIN_PASSWORD format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_556017369 { 
+   	label=LoginAnonymousPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginAnonymousPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginAnonymousPacket
+
+&#10;  Create a byte buffer according to LOGIN_ANONYMOUS format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_687450180 { 
+   	label=IntPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   IntPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="IntPacket
+
+&#10;  Create a byte buffer according to INT format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_82813655 { 
+   	label=FusionInitPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitPacket
+
+&#10;  Create a byte buffer according to FUSION_INIT format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_83082388 { 
+   	label=FusionInitFWDPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitFWDPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitFWDPacket
+
+&#10;  Create a byte buffer according to FUSION_INIT_FWD format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_962576950 { 
+   	label=LoginRefusedPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginRefusedPacket1392084659XXXtoByteBuffer0[
+	label="+ toByteBuffer()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginRefusedPacket
+
+&#10;  Create a byte buffer according to LOGIN_REFUSED format&#10;  @return the byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+} 
+} 
+
+'edges    
+AContext1963540708XXXprocessOut0 -> FusionChangeLeaderPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionInitFWDPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionInitKOPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionInitOKPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionInitPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionMergePacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionRequestPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> FusionRequestResPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> IntPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> LoginAcceptedPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> LoginAnonymousPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> LoginPasswordPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> LoginRefusedPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> OpCodePacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> PrivateFilePacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> PrivateMessagePacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> PublicMessagePacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXprocessOut0 -> StringPacket1392084659XXXtoByteBuffer0;
+AContext1963540708XXXqueueMessage1911998296 -> AContext1963540708XXXprocessOut0;
+AContext1963540708XXXqueueMessage1911998296 -> AContext1963540708XXXupdateInterestOps0;
+AContext1963540708XXXupdateInterestOps0 -> AContext1963540708XXXsilentlyClose0;
+ClientChatFusion1030237686XXXconnectToServer0 -> AContext1963540708XXXqueueMessage1911998296;
+    
+}
+@enduml

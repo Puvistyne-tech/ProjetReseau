@@ -75,7 +75,7 @@ a) Message public :
 
 Pour envoyer un message à tous les clients connectés au méga-serveur, un client envoie une commande MESSAGE(4) d'OPCODE 4.
 
-MESSAGE(4) = 4 (OPCODE) server (STRING<=100) login (STRING<=30) msg (STRING<=1024)
+MESSAGE(4) = 4 (OPCODE) serverChatFusion (STRING<=100) login (STRING<=30) msg (STRING<=1024)
 
 Le serveur doit être le nom du serveur au quel le client est connecté.
 Le login doit être le login utilisé lors de l'identification.
@@ -130,7 +130,9 @@ c) Envoi d'un fichier privé :
    --------------------------
 
 L'envoi d'un fichier en privé suit la même logique que l'envoi des messages privés.
-Pour ne pas créer de commande de taille trop importante, le fichier à envoyer est coupé en n morceaux de taille au plus 5000 octets. Un client voulant envoyer un fichier au client ayant le login login_dest sur le serveur_dst enverra à son serveur une série de commandes FILE_PRIVATE d'OPCODE 6. Chaque commande FILE_PRIVATE correspondra à un morceau du fichier.
+Pour ne pas créer de commande de taille trop importante, le fichier à envoyer est coupé en n morceaux de taille au plus 5000 octets.
+Un client voulant envoyer un fichier au client ayant le login login_dest sur le serveur_dst enverra à son serveur une série de commandes
+FILE_PRIVATE d'OPCODE 6. Chaque commande FILE_PRIVATE correspondra à un morceau du fichier.
 
 FILE_PRIVATE(6) = 6 (OPCODE) server_src (STRING<=100) login_src (STRING<=30) server_dst (STRING<=100) login_dest (STRING<=30) filename (STRING<=100) nb_blocks (INT) block_size (INT) block (BYTES)
 
@@ -159,7 +161,9 @@ A) Initiation de la fusion
 Si A est le leader de son méga-serveur :
 ----------------------------------------
 
-Si A est le leader de son méga-serveur et qu'aucune fusion n'est en cours, il établit une connexion vers B. Il envoie une commande FUSION_INIT(8) d'OPCODE 8. Si une fusion est en cours, il attend que la fusion soit terminée.
+Si A est le leader de son méga-serveur et qu'aucune fusion n'est en cours, il établit une connexion vers B.
+Il envoie une commande
+FUSION_INIT(8) d'OPCODE 8. Si une fusion est en cours, il attend que la fusion soit terminée.
 
 FUSION_INIT(8) = 8 (OPCODE) name (STRING<=100) adresse (SOCKETADDRESS) nb_members (INT) name_0 (STRING<=100) name_1 ...
 
@@ -170,39 +174,46 @@ name_0,name_1 sont les noms des autres membres du méga-serveur.
 
 En recevant cette commande,
 
-a) le serveur B, s'il est leader de son méga-serveur et qu'aucun membre de son méga-serveur n'a de nom en commun avec les noms du méga serveur de A, renvoie la commande FUSION_INIT_OK(9) d'OPCODE 9.
+a) le serveur B, s'il est leader de son méga-serveur et qu'aucun membre de son méga-serveur n'a de nom
+en commun avec les noms du méga serveur de A, renvoie la commande FUSION_INIT_OK(9) d'OPCODE 9.
 
-FUSION_INIT_OK(9) = 9 (OPCODE) name (STRING<=100) adresse (SOCKETADDRESS) nb_members (INT) name_0 (STRING<=100) name_1 ...
+FUSION_INIT_OK(9) = 9 (OPCODE) name (STRING<=100) adresse (SOCKETADDRESS) nb_members (INT) name_0 (STRING<=100)
+ name_1 ...
 qui contient les mêmes informations que la commande FUSION_INIT mais pour le serveur B.
 
 On passe donc à l'étape de réalisation de la fusion (B) ci-après.
 
-b) si le serveur B est le leader de son méga-serveur et que les deux méga-serveurs contiennent un nom en commun, la fusion n'est pas possible. Le serveur B renvoie la commande 
+b) si le serveur B est le leader de son méga-serveur et que les deux méga-serveurs contiennent un nom en commun,
+la fusion n'est pas possible. Le serveur B renvoie la commande
 
 FUSION_INIT_KO(10)= 10 (OPCODE)
 
-c) si le serveur B n'est pas le leader de son méga-serveur, il envoie l'adresse de la socket de son leader avec la commande FUSION_INIT_FWD d'OPCODE 11 : 
+c) si le serveur B n'est pas le leader de son méga-serveur, il envoie l'adresse de la socket de son leader avec
+la commande FUSION_INIT_FWD d'OPCODE 11 :
 
 FUSION_INIT_FWD(11)= 11 (OPCODE) addresse_leader (SOCKETADDRESS)
 
 address_leader est l'adresse de la socket du leader du méga-serveur de B
 
-Quand A reçoit cette réponse, il va tenter d'établir une fusion avec le leader du méga-serveur de B dont il vient de recevoir l'adresse de la socket.
+Quand A reçoit cette réponse, il va tenter d'établir une fusion avec le leader du méga-serveur de B dont il vient de
+recevoir l'adresse de la socket.
 
 
 Si A n'est pas le leader de son méga-serveur :
 ----------------------------------------------
 
 
-Si A n'est pas pas le leader de son méga-serveur, il envoie une commande FUSION_REQUEST(12) d'OPCODE 12 à son leader pour lui signifier qu'il veut fusionner avec le méga-serveur dont B fait partie.
+Si A n'est pas pas le leader de son méga-serveur, il envoie une commande FUSION_REQUEST(12) d'OPCODE 12 à son
+leader pour lui signifier qu'il veut fusionner avec le méga-serveur dont B fait partie.
 
 FUSION_REQUEST(12) = 12 (OPCODE) address (SOCKETADDRESS)
 
 address est l'adresse de la socket du serveur B.
 
-En recevant la cette commande le leader de A va initier la fusion comme ci-dessus si aucune fusion n'est en cours. Si une fusion est en cours, le leader répondra avec la commande FUSION_REQUEST_RESP d'OPCODE 13 :
+En recevant la cette commande le leader de A va initier la fusion comme ci-dessus si aucune fusion n'est en cours.
+Si une fusion est en cours, le leader répondra avec la commande FUSION_REQUEST_RESP d'OPCODE 13 :
 
-FUSION_REQUEST(13) = 13 (OPCODE) status (BYTE)
+FUSION_REQUEST_RES(13) = 13 (OPCODE) status (BYTE)
 
 status vaudra 0 si la fusion n'est pas possible et vaudra 1 si la fusion a pu être initiée.
 
@@ -210,14 +221,18 @@ status vaudra 0 si la fusion n'est pas possible et vaudra 1 si la fusion a pu ê
 B) Réalisation de la fusion :
    -------------------------
 
-A cette étape, deux serveurs A et B qui sont tous les deux leaders de leur méga-serveur respectifs ont accepté de fusionner.
+A cette étape, deux serveurs A et B qui sont tous les deux leaders de leur méga-serveur respectifs ont accepté de
+fusionner.
 
 A connaît le nom de B, l'adresse de sa socket et tous les noms des serveurs du méga-serveur de B.
 B connaît le nom de A, l'adresse de sa socket et tous les noms des serveurs du méga-serveur de A.
 
 A et B savent tous les deux que A va être le leader du nouveau méga-serveur.
 
-Le serveur B (qui ne sera plus leader car son nom est plus grand que celui de A) va contacter tous les membres de son méga-serveur pour les prévenir que le leader change et qu'il doivent aller se connecter auprès du nouveau leader. Sa connexion avec A sera utilisée pour les communications futures avec A qui est le nouveau leader du méga-serveur.
+Le serveur B (qui ne sera plus leader car son nom est plus grand que celui de A) va contacter tous les membres de
+ son méga-serveur pour les prévenir que le leader change et qu'il doivent aller se connecter auprès du nouveau
+  leader. Sa connexion avec A sera utilisée pour les communications futures avec A qui est le nouveau leader du
+   méga-serveur.
 
 Le serveur B envoie donc à tous les membres de sont méga-serveur, la commande FUSION_CHANGE_LEADER(14) d'OPCODE 14 :
 
@@ -227,7 +242,8 @@ address_leader est l'adresse de la socket de A.
 
 Il ferme ensuite les connections avec les autres membres de son méga-serveur.
 
-Quand un serveur reçoit une commande FUSION_CHANGE_LEADER(14) de son leader, il se connecte à l'adresse du nouveau leader et envoie une commande FUSION_MERGE(15) avec l'OPCODE 15.
+Quand un serveur reçoit une commande FUSION_CHANGE_LEADER(14) de son leader, il se connecte à l'adresse du nouveau
+leader et envoie une commande FUSION_MERGE(15) avec l'OPCODE 15.
 
 FUSION_MERGE(15) = 15 (OPCODE) name (STRING)
 
@@ -240,6 +256,7 @@ Quand le serveur A a reçu une connexion des tous les membres du méga-serveur d
 Problèmes connus
 ----------------
 
-Ceci est un projet pédagogique. La fusion entre les serveurs n'est absolument pas sécurisée. Il est possible de se faire passer pour un autre serveur pendant la phase de fusion. Ceci pourrait être corrigé en utilisant des tokens pendant la fusion. 
+Ceci est un projet pédagogique. La fusion entre les serveurs n'est absolument pas sécurisée. Il est possible de se faire passer pour un autre serveur pendant la phase de fusion.
+Ceci pourrait être corrigé en utilisant des tokens pendant la fusion.
 
 Le protocole ne permet aucune récupération si un serveur est redémarré ou tombe en panne.

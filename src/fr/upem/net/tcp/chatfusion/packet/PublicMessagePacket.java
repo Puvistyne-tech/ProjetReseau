@@ -13,64 +13,106 @@ import java.nio.ByteBuffer;
  * login (STRING<=30)
  * msg (STRING<=1024)
  */
+
+/**
+ * <p>
+ *     Create a MESSAGE packet.
+ *</p>
+ * <p>
+ *     Create this packet in order to send a text message
+ *     from a client to all the clients who are connected
+ *     to the mega-server.
+ * </p>
+ */
 public class PublicMessagePacket implements Packet {
 
-    public String server() {
-        return server;
+    /**
+     * Get the source server name
+     * @return the source server name
+     */
+    public String serverSource() {
+        return serverSource;
     }
 
-    public String login() {
-        return login;
+    /**
+     * Get the source login username
+     * @return the source login username
+     */
+    public String loginSource() {
+        return loginSource;
     }
 
+    /**
+     * Get the message content
+     * @return the message content
+     */
     public String message() {
         return message;
     }
 
     private final OPCODE opcode;
-    private final String server;
-
-
-    private final String login;
+    private final String serverSource;
+    private final String loginSource;
     private final String message;
 
+    /**
+     * Constructs a MESSAGE packet according to
+     * MESSAGE format
+     * @param serverSource  the source server name
+     * @param loginSource   the source login username
+     * @param message       the text message content
+     */
     public PublicMessagePacket(
             String serverSource,
             String loginSource,
             String message) {
         this.opcode = OPCODE.MESSAGE_PUBLIC;
-        this.server = Packet.verifySize(serverSource, 100);
-        this.login = Packet.verifySize(loginSource, 30);
+        this.serverSource = Packet.verifySize(serverSource, 100);
+        this.loginSource = Packet.verifySize(loginSource, 30);
         this.message = Packet.verifySize(message, 1024);
     }
 
+    /**
+     * Create a byte buffer according to MESSAGE format
+     * @return the byte buffer
+     */
     @Override
     public ByteBuffer toByteBuffer() {
 
         return new Buffer.Builder(opcode)
-                .addStringPacket(new StringPacket(server))
-                .addStringPacket(new StringPacket(login))
-                .addStringPacket(new StringPacket(message))
+                .addString(serverSource)
+                .addString(loginSource)
+                .addString(message)
                 .build();
     }
 
+    /**
+     * Create a string representation of a MESSAGE packet.
+     * @return a string
+     */
     @Override
     public String toString() {
         return "PublicMessagePacket{" +
                 "opcode=" + opcode +
-                ", server='" + server + '\'' +
-                ", login='" + login + '\'' +
+                ", server='" + serverSource + '\'' +
+                ", login='" + loginSource + '\'' +
                 ", message='" + message + '\'' +
                 '}';
     }
 
+    /**
+     * Perform this operation on the given packet according to his
+     * actual type
+     * @param visitor the packet
+     */
     @Override
     public void accept(IPacketVisitor visitor) {
         visitor.visit(this);
     }
 
+    // TO DELETE
     public String from() {
-        return login;
+        return loginSource;
     }
 
     public String getMessage() {

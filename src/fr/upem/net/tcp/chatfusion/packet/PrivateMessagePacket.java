@@ -15,26 +15,17 @@ import java.nio.ByteBuffer;
  * login_dest (STRING<=30)
  * msg (STRING<=1024)
  */
+
+/**
+ * <p>
+ *     Create a MESSAGE_PRIVATE packet.
+ *</p>
+ * <p>
+ *     Create this packet in order to send a text message
+ *     from a client to another client.
+ * </p>
+ */
 public class PrivateMessagePacket implements Packet {
-    public String serverSource() {
-        return serverSource;
-    }
-
-    public String loginSource() {
-        return loginSource;
-    }
-
-    public String severDestination() {
-        return severDestination;
-    }
-
-    public String loginDestination() {
-        return loginDestination;
-    }
-
-    public String message() {
-        return message;
-    }
 
     private final OPCODE opcode;
     private final String serverSource;
@@ -43,6 +34,15 @@ public class PrivateMessagePacket implements Packet {
     private final String loginDestination;
     private final String message;
 
+    /**
+     * Constructs a MESSAGE_PRIVATE packet according to
+     * MESSAGE_PRIVATE format
+     * @param serverSource      the source server name
+     * @param loginSource       the source login username
+     * @param severDestination  the destination server name
+     * @param loginDestination  the destination login username
+     * @param message           the text message content
+     */
     public PrivateMessagePacket(
             String serverSource,
             String loginSource,
@@ -57,19 +57,65 @@ public class PrivateMessagePacket implements Packet {
         this.message = Packet.verifySize(message, 1024);
     }
 
-    @Override
-    public ByteBuffer toByteBuffer() {
-        var buffer = new Buffer.Builder(opcode)
-                .addStringPacket(new StringPacket(serverSource))
-                .addStringPacket(new StringPacket(loginSource))
-                .addStringPacket(new StringPacket(severDestination))
-                .addStringPacket(new StringPacket(loginDestination))
-                .addStringPacket(new StringPacket(message))
-                .build();
-//        return buffer.flip();
-        return buffer;
+    /**
+     * Get the source server name
+     * @return the source server name
+     */
+    public String serverSource() {
+        return serverSource;
     }
 
+    /**
+     * Get the source login username
+     * @return the source login username
+     */
+    public String loginSource() {
+        return loginSource;
+    }
+
+    /**
+     * Get the destination server name
+     * @return the destination server name
+     */
+    public String severDestination() {
+        return severDestination;
+    }
+
+    /**
+     * Get the destination login username
+     * @return the destination login username
+     */
+    public String loginDestination() {
+        return loginDestination;
+    }
+
+    /**
+     * Get the message content
+     * @return the message content
+     */
+    public String message() {
+        return message;
+    }
+
+    /**
+     * Create a byte buffer according to MESSAGE_PRIVATE format
+     * @return the byte buffer
+     */
+    @Override
+    public ByteBuffer toByteBuffer() {
+        return new Buffer.Builder(opcode)
+                .addString(serverSource)
+                .addString(loginSource)
+                .addString(severDestination)
+                .addString(loginDestination)
+                .addString(message)
+                .build();
+    }
+
+    /**
+     * Create a string representation of a MESSAGE_PRIVATE packet.
+     * @return a string
+     */
     @Override
     public String toString() {
         return "PrivateMessagePacket{" +
@@ -82,6 +128,7 @@ public class PrivateMessagePacket implements Packet {
                 '}';
     }
 
+    // TO DELETE
     public String from() {
         return loginSource;
     }
@@ -93,6 +140,12 @@ public class PrivateMessagePacket implements Packet {
     public String getMessage() {
         return message;
     }
+
+    /**
+     * Perform this operation on the given packet according to his
+     * actual type
+     * @param visitor the packet
+     */
     @Override
     public void accept(IPacketVisitor visitor) {
         visitor.visit(this);

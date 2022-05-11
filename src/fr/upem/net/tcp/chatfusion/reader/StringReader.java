@@ -8,14 +8,41 @@ import java.nio.charset.StandardCharsets;
 
 import static fr.upem.net.tcp.chatfusion.reader.Reader.ProcessStatus.*;
 
-
+/**
+ * Read a string
+ */
 public class StringReader implements Reader<StringPacket> {
 
     private final static int BUFFER_SIZE = 1024;
     private final static Charset CHARSET = StandardCharsets.UTF_8;
 
+    /**
+     * Byte buffer status
+     * {@link #DONE}
+     * {@link #WAITING_SIZE}
+     * {@link #WAITING_STRING}
+     * {@link #ERROR}
+     */
     private enum State {
-        DONE, WAITING_SIZE, WAITING_STRING, ERROR
+        /**
+         * The byte buffer has been fully filled with a string having
+         * the specified size (cf., WAITING_SIZE)
+         */
+        DONE,
+        /**
+         * The byte buffer is expecting to receive an integer which
+         * represent the expected string size
+         */
+        WAITING_SIZE,
+        /**
+         * The byte buffer is expecting to receive a string which
+         * represent the actual string
+         */
+        WAITING_STRING,
+        /**
+         * The byte buffer hasn't been filled with a valid string
+         */
+        ERROR
     }
 
     private State state = State.WAITING_SIZE;
@@ -23,7 +50,18 @@ public class StringReader implements Reader<StringPacket> {
     private final ByteBuffer internalBuffer = ByteBuffer.allocate(BUFFER_SIZE); // write-mode
     private StringPacket value;
 
-    //€a€
+    /**
+     * <p>
+     *     Extract the content of the byte buffer according to the
+     *     STRING format
+     * </p>
+     * <p>
+     *     According to the convention, the byte buffer is in writing mode
+     *     previously and afterward the method call
+     * </p>
+     * @param buffer the byte buffer
+     * @return       the byte buffer status
+     */
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
         if (state == State.DONE || state == State.ERROR) {
@@ -68,6 +106,12 @@ public class StringReader implements Reader<StringPacket> {
 
     }
 
+    /**
+     * Read an integer from the byte buffer in order to get the string size
+     * and change the byte buffer status according to the STRING format
+     * @param buffer the byte buffer
+     * @return       the integer read in the byte buffer
+     */
     private void readSize(ByteBuffer buffer) {
         var status = intReader.process(buffer);
         if (status == DONE) {
@@ -82,6 +126,10 @@ public class StringReader implements Reader<StringPacket> {
         }
     }
 
+    /**
+     * Get the value of the STRING
+     * @return the STRING
+     */
     @Override
     public StringPacket get() {
         if (state != State.DONE) {
@@ -90,6 +138,9 @@ public class StringReader implements Reader<StringPacket> {
         return value;
     }
 
+    /**
+     * Reset StringReader's fields
+     */
     @Override
     public void reset() {
         state = State.WAITING_SIZE;

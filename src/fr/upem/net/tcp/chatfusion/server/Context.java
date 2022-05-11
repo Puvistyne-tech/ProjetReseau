@@ -1,6 +1,7 @@
 package fr.upem.net.tcp.chatfusion.server;
 
 
+import fr.upem.net.tcp.chatfusion.context.AContext;
 import fr.upem.net.tcp.chatfusion.context.IContext;
 import fr.upem.net.tcp.chatfusion.packet.*;
 import fr.upem.net.tcp.chatfusion.reader.*;
@@ -13,129 +14,30 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayDeque;
 import java.util.logging.Logger;
 
+/**
+ * Context for Server
+ */
+public class Context extends AContext {
 
-public class Context implements IContext {
+    private String login;
 
-    Logger logger = Logger.getLogger(Context.class.getName());
+    private final ServerChatFusion serverChatFusion;
 
-
-    public String login;
-    private final SelectionKey key;
-    private final SocketChannel sc;
-    private final Server server;
-    private final ByteBuffer bufferIn = ByteBuffer.allocate(BUFFER_SIZE);
-    private final ByteBuffer bufferOut = ByteBuffer.allocate(BUFFER_SIZE);
-    private final ArrayDeque<Packet> queue = new ArrayDeque<>();
-    private boolean closed = false;
-    private ServerVisitor visitor;
-
-    public Server getServer() {
-        return this.server;
-    }
-
-    public SocketChannel getSocketChannel() {
-        return this.sc;
-    }
-
-    public Context(Server server, SelectionKey key) {
-        this.key = key;
-        this.sc = (SocketChannel) key.channel();
-        this.server = server;
-
-        visitor = new ServerVisitor(this);
-    }
-
-    public boolean isClosed() {
-        return closed;
+    /**
+     * Gets the server chat fusion
+     * @return the ChatFusion's server
+     */
+    public ServerChatFusion getServer() {
+        return this.serverChatFusion;
     }
 
     /**
-     * Process the content of bufferIn
-     * <p>
-     * The convention is that bufferIn is in write-mode before the call to process and
-     * after the call
+     * Constructs a context for a server
+     * @param serverChatFusion  the ChatFusion's server
+     * @param key               the server socket
      */
-    @Override
-    public void processIn() {
-
-//        var opCodeReader = OpCodeHandler.getOpCode(bufferIn);
-        var reader = new PacketReader();
-        for (; ; ) {
-
-//            var status=packetReader.process(bufferIn);
-//            switch (status){
-//                case ERROR:
-//                    silentlyClose();
-//                    return;
-//                case REFILL:
-//                    return;
-//                case DONE:
-//                    Packet packet=packetReader.get();
-//                    packetReader.reset();
-//                    treatPacket(packet);
-//                    break;
-//            }
-
-//            Reader<? extends Packet> reader = null;
-            assert reader != null;
-            Reader.ProcessStatus status = reader.process(bufferIn);
-            switch (status) {
-                case DONE:
-                    var value = reader.get();
-                    value.accept(visitor);
-                    reader.reset();
-                    return;
-                case REFILL:
-                    return;
-                case ERROR:
-                    silentlyClose();
-                    return;
-            }
-//            switch (opCodeReader) {
-//                case MESSAGE_PUBLIC -> {
-//                    //reader = new PublicMessageReader();
-//                    handlePublicMessage(new PublicMessageReader());
-//                    return;
-//                }
-//                case MESSAGE_PRIVATE -> {
-//                    handlePrivateMessage(new PrivateMessageReader());
-//                    return;
-//                }
-//                case LOGIN_ANONYMOUS -> {
-//                    handleAnonymousLogin(new LoginAnonymousReader());
-//                    return;
-//                }
-//                case LOGIN_PASSWORD -> {
-//                    handleLoginPassword(new LoginPasswordReader());
-//                    return;
-//                }
-//
-//            }
-
-
-        }
-    }
-
-    private void handlePublicMessage(PublicMessageReader reader) {
-        assert reader != null;
-        Reader.ProcessStatus status = reader.process(bufferIn);
-        switch (status) {
-            case DONE:
-                var value = reader.get();
-                server.broadcast(value);
-                reader.reset();
-                break;
-            case REFILL:
-                return;
-            case ERROR:
-                silentlyClose();
-                return;
-        }
-    }
-
-    private void handlePrivateMessage(PrivateMessageReader reader) {
-        assert reader != null;
-        var status = reader.process(bufferIn);
+    public Context(ServerChatFusion serverChatFusion, SelectionKey key) {
+        super(key);
 
         if (status == Reader.ProcessStatus.DONE) {
             var prvtMsgP = reader.get();

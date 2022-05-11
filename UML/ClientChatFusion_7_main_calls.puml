@@ -1,0 +1,265 @@
+@startuml
+
+/' diagram meta data start
+config=CallConfiguration;
+{
+  "rootMethod": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion#main(String[])",
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": true,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": true,
+    "cutInterfaceStructures": true,
+    "cutDataStructures": true,
+    "cutGetterAndSetter": true,
+    "cutConstructors": true
+  },
+  "graphTraversal": {
+    "forwardDepth": 3,
+    "backwardDepth": 3,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": true, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "ForwardOnly" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showMethodParametersTypes": false,
+    "showMethodParametersNames": false,
+    "showMethodReturnType": false,
+    "showPackageLevels": 2,
+    "showCallOrder": false,
+    "edgeMode": "MethodsOnly", // TypesOnly, MethodsOnly, TypesAndMethods, MethodsAndDirectTypeUsage
+    "showDetailedClassStructure": false
+  },
+  "rootClass": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="LR"
+    splines=polyline
+    
+
+'nodes 
+subgraph cluster_3596419 { 
+   	label=upem
+	labeljust=l
+	fillcolor="#ececec"
+	style=filled
+   
+   subgraph cluster_1360230834 { 
+   	label=net
+	labeljust=l
+	fillcolor="#d8d8d8"
+	style=filled
+   
+   subgraph cluster_1171374913 { 
+   	label=ClientChatFusion
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   ClientChatFusion1030237686XXXinitiate0[
+	label="+ initiate()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  Initiates a connection with the remote server&#10;  @throws IOException if an I/O error occurs&#10; "
+	fontcolor=darkgreen
+];
+
+ClientChatFusion1030237686XXXlaunch0[
+	label="+ launch()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  Launches the client&#10;  @throws IOException if an I/O error occurs&#10; "
+	fontcolor=darkgreen
+];
+
+ClientChatFusion1030237686XXXmain1859653459[
+	label="+ main()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  @throws NumberFormatException if a conversion is attempted from a bad format&#10; string to a numeric type&#10;  @throws IOExceptionif an I/O error occurs&#10; "
+	penwidth=4
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1288723464 { 
+   	label=AContext
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   AContext1963540708XXXqueueMessage1911998296[
+	label="+ queueMessage()"
+	style=filled
+	fillcolor=white
+	tooltip="AContext
+
+&#10;  Add a message to the message queue, tries to fill bufferOut and updateInterestOps&#10; &#10;  @param packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_809212336 { 
+   	label=Commander
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   Commander50095398XXXgetLogin1859653459[
+	label="+ getLogin()"
+	style=filled
+	fillcolor=white
+	tooltip="Commander
+
+null"
+	fontcolor=darkgreen
+];
+
+Commander50095398XXXreadFromTerminal1808118735[
+	label="+ readFromTerminal()"
+	style=filled
+	fillcolor=white
+	tooltip="Commander
+
+null"
+	fontcolor=darkgreen
+];
+
+Commander50095398XXXtreatPrivateFile2118012780[
+	label="+ treatPrivateFile()"
+	style=filled
+	fillcolor=white
+	tooltip="Commander
+
+null"
+	fontcolor=darkgreen
+];
+
+Commander50095398XXXtreatPrivateMessage924985979[
+	label="+ treatPrivateMessage()"
+	style=filled
+	fillcolor=white
+	tooltip="Commander
+
+null"
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_811926064 { 
+   	label=Builder
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   Builder1135106371XXXaddInt104431[
+	label="+ addInt()"
+	style=filled
+	fillcolor=white
+	tooltip="Builder
+
+&#10;  Fills the byte buffer with an integer&#10;  @param intValue the integer&#10;  @return this instance of Builder&#10; "
+	fontcolor=darkgreen
+];
+
+Builder1135106371XXXaddOpCode1957308594[
+	label="+ addOpCode()"
+	style=filled
+	fillcolor=white
+	tooltip="Builder
+
+&#10;  Fills the byte buffer with an OpCode&#10;  @param opcode the OpCode&#10;  @return this instance of Builder&#10; "
+	fontcolor=darkgreen
+];
+
+Builder1135106371XXXaddString1808118735[
+	label="+ addString()"
+	style=filled
+	fillcolor=white
+	tooltip="Builder
+
+&#10;  Fills the byte buffer with a string&#10;  @param string the string&#10;  @return this instance of Builder&#10; "
+	fontcolor=darkgreen
+];
+
+Builder1135106371XXXbuild0[
+	label="+ build()"
+	style=filled
+	fillcolor=white
+	tooltip="Builder
+
+&#10;  Gets the filled byte buffer&#10;  @return this byte buffer&#10; "
+	fontcolor=darkgreen
+];
+} 
+} 
+} 
+
+'edges    
+ClientChatFusion1030237686XXXlaunch0 -> AContext1963540708XXXqueueMessage1911998296;
+ClientChatFusion1030237686XXXlaunch0 -> ClientChatFusion1030237686XXXinitiate0;
+ClientChatFusion1030237686XXXlaunch0 -> Commander50095398XXXreadFromTerminal1808118735;
+ClientChatFusion1030237686XXXlaunch0 -> Commander50095398XXXtreatPrivateFile2118012780;
+ClientChatFusion1030237686XXXlaunch0 -> Commander50095398XXXtreatPrivateMessage924985979;
+ClientChatFusion1030237686XXXmain1859653459 -> ClientChatFusion1030237686XXXlaunch0;
+ClientChatFusion1030237686XXXmain1859653459 -> Commander50095398XXXgetLogin1859653459;
+Commander50095398XXXtreatPrivateFile2118012780 -> AContext1963540708XXXqueueMessage1911998296;
+Commander50095398XXXtreatPrivateFile2118012780 -> Builder1135106371XXXaddInt104431;
+Commander50095398XXXtreatPrivateFile2118012780 -> Builder1135106371XXXaddOpCode1957308594;
+Commander50095398XXXtreatPrivateFile2118012780 -> Builder1135106371XXXaddString1808118735;
+Commander50095398XXXtreatPrivateFile2118012780 -> Builder1135106371XXXbuild0;
+    
+}
+@enduml

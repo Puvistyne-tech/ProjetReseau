@@ -11,13 +11,23 @@ import java.nio.ByteBuffer;
  * 15 (OPCODE)
  * name (STRING)
  */
-public class FusionMergePacket implements Packet {
-    private final String name;
 
-    public FusionMergePacket(String name) {
-        this.name = name;
-    }
+/**
+ * <p>
+ *     Create a FUSION_MERGE packet.
+ *</p>
+ * <p>
+ *     Create this packet in order to initiate, from a server
+ *     to the new mega-server leader, a fusion.
+ * </p>
+ * @param name the server name that connects to the new leader
+ */
+public record FusionMergePacket(String name) implements Packet {
 
+    /**
+     * Create a byte buffer according to FUSION_MERGE format
+     * @return the byte buffer
+     */
     @Override
     public ByteBuffer toByteBuffer() {
         return new Buffer.Builder(OPCODE.FUSION_MERGE)
@@ -25,6 +35,11 @@ public class FusionMergePacket implements Packet {
                 .build();
     }
 
+    /**
+     * Perform this operation on the given packet according to his
+     * actual type
+     * @param visitor the packet
+     */
     @Override
     public void accept(IPacketVisitor visitor) {
         visitor.visit(this);

@@ -1,66 +1,47 @@
 package fr.upem.net.tcp.chatfusion.reader;
 
 import fr.upem.net.tcp.chatfusion.utils.OPCODE;
+
 import java.nio.ByteBuffer;
 
+/**
+ * Read an OPCODE
+ */
 public class OpCodeReader implements Reader<OPCODE> {
 
-    private enum State {
-        DONE, WAITING, ERROR
-    }
+    private final ByteReader byteReader = new ByteReader();
 
-    private State state = State.WAITING;
-    private final ByteBuffer internalBuffer = ByteBuffer.allocate(Byte.BYTES); // write-mode
-//    private OpCodePacket value;
-    private OPCODE value;
-
+    /**
+     * <p>
+     *      Extract the byte of the byte buffer which represent the OPCODE
+     * </p>
+     * <p>
+     *     According to the convention, the byte buffer is in writing mode
+     *     previously and afterward the method call
+     * </p>
+     * @param buffer the byte buffer
+     * @return       the byte buffer status
+     */
     @Override
     public ProcessStatus process(ByteBuffer buffer) {
-
-        if (state == State.DONE || state == State.ERROR) {
-            throw new IllegalStateException();
-        }
-
-        buffer.flip();
-
-        try {
-            if (buffer.remaining() <= internalBuffer.remaining()) {
-                internalBuffer.put(buffer);
-            } else {
-                var oldLimit = buffer.limit();
-                buffer.limit(internalBuffer.remaining());
-                internalBuffer.put(buffer);
-                buffer.limit(oldLimit);
-            }
-        } finally {
-            buffer.compact();
-        }
-
-        if (internalBuffer.hasRemaining()) {
-            return ProcessStatus.REFILL;
-        }
-
-        state = State.DONE;
-        internalBuffer.flip();
-//        var op=internalBuffer.get();
-//        var t= OPCODE.values()[op];
-//        value = new OpCodePacket(OPCODE.byteToOpcode(internalBuffer.get()));
-        value = OPCODE.byteToOpcode(internalBuffer.get());
-        return ProcessStatus.DONE;
+        return byteReader.process(buffer);
     }
 
+    /**
+     * Get the value of the OPCODE
+     * @return the OPCODE
+     */
     @Override
     public OPCODE get() {
-        if (state != State.DONE) {
-            throw new IllegalStateException();
-        }
-        return value;
+        return OPCODE.byteToOpcode(byteReader.get());
     }
 
+    /**
+     * Reset the OpCodeReader's field
+     */
     @Override
     public void reset() {
-        state = State.WAITING;
-        value = null;
-        internalBuffer.clear();
+        byteReader.reset();
     }
+
 }

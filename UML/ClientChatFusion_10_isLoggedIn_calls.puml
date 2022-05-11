@@ -1,0 +1,450 @@
+@startuml
+
+/' diagram meta data start
+config=CallConfiguration;
+{
+  "rootMethod": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion#isLoggedIn()",
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": true,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": true,
+    "cutInterfaceStructures": true,
+    "cutDataStructures": true,
+    "cutGetterAndSetter": true,
+    "cutConstructors": true
+  },
+  "graphTraversal": {
+    "forwardDepth": 3,
+    "backwardDepth": 3,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": true, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "ForwardOnly" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showMethodParametersTypes": false,
+    "showMethodParametersNames": false,
+    "showMethodReturnType": false,
+    "showPackageLevels": 2,
+    "showCallOrder": false,
+    "edgeMode": "MethodsOnly", // TypesOnly, MethodsOnly, TypesAndMethods, MethodsAndDirectTypeUsage
+    "showDetailedClassStructure": false
+  },
+  "rootClass": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="LR"
+    splines=polyline
+    
+
+'nodes 
+subgraph cluster_3596419 { 
+   	label=upem
+	labeljust=l
+	fillcolor="#ececec"
+	style=filled
+   
+   subgraph cluster_1360230834 { 
+   	label=net
+	labeljust=l
+	fillcolor="#d8d8d8"
+	style=filled
+   
+   subgraph cluster_1042234453 { 
+   	label=PublicMessagePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   PublicMessagePacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="PublicMessagePacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1171374913 { 
+   	label=ClientChatFusion
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   ClientChatFusion1030237686XXXisLoggedIn0[
+	label="+ isLoggedIn()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  Gets if whether or not the client is still connected&#10; "
+	penwidth=4
+	fontcolor=darkgreen
+];
+
+ClientChatFusion1030237686XXXlaunch0[
+	label="+ launch()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  Launches the client&#10;  @throws IOException if an I/O error occurs&#10; "
+	fontcolor=darkgreen
+];
+
+ClientChatFusion1030237686XXXmain1859653459[
+	label="+ main()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientChatFusion
+
+&#10;  @throws NumberFormatException if a conversion is attempted from a bad format&#10; string to a numeric type&#10;  @throws IOExceptionif an I/O error occurs&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1273207916 { 
+   	label=PrivateFilePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   PrivateFilePacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="PrivateFilePacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1288723464 { 
+   	label=AContext
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   AContext1963540708XXXprocessIn0[
+	label="+ processIn()"
+	style=filled
+	fillcolor=white
+	tooltip="AContext
+
+&#10;  Process the content of bufferIn&#10;  \<p\>&#10;  The convention is that bufferIn is in write-mode before the call to process&#10;  and after the call&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1406290720 { 
+   	label=FusionChangeLeaderPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionChangeLeaderPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionChangeLeaderPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1493024389 { 
+   	label=FusionInitKOPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitKOPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitKOPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1531365593 { 
+   	label=PrivateMessagePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   PrivateMessagePacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="PrivateMessagePacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1751192920 { 
+   	label=FusionRequestResPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionRequestResPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionRequestResPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_187222781 { 
+   	label=LoginAcceptedPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginAcceptedPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginAcceptedPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_1928202227 { 
+   	label=FusionInitOKPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitOKPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitOKPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_2035752696 { 
+   	label=ClientVisitor
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   ClientVisitor1478770595XXXvisit1911998296[
+	label="+ visit()"
+	style=filled
+	fillcolor=white
+	tooltip="ClientVisitor
+
+null"
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_2143020449 { 
+   	label=FusionMergePacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionMergePacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionMergePacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_269669768 { 
+   	label=FusionRequestPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionRequestPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionRequestPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_416866033 { 
+   	label=LoginPasswordPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginPasswordPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginPasswordPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_556017369 { 
+   	label=LoginAnonymousPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginAnonymousPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginAnonymousPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_82813655 { 
+   	label=FusionInitPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_83082388 { 
+   	label=FusionInitFWDPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   FusionInitFWDPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="FusionInitFWDPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+
+subgraph cluster_962576950 { 
+   	label=LoginRefusedPacket
+	labeljust=l
+	fillcolor=white
+	style=filled
+   
+   LoginRefusedPacket1392084659XXXaccept1699314435[
+	label="+ accept()"
+	style=filled
+	fillcolor=white
+	tooltip="LoginRefusedPacket
+
+&#10;  Perform this operation on the given packet according to his&#10;  actual type&#10;  @param visitor the packet&#10; "
+	fontcolor=darkgreen
+];
+} 
+} 
+} 
+
+'edges    
+AContext1963540708XXXprocessIn0 -> PrivateFilePacket1392084659XXXaccept1699314435;
+ClientChatFusion1030237686XXXlaunch0 -> ClientChatFusion1030237686XXXisLoggedIn0;
+ClientChatFusion1030237686XXXmain1859653459 -> ClientChatFusion1030237686XXXlaunch0;
+ClientVisitor1478770595XXXvisit1911998296 -> ClientChatFusion1030237686XXXisLoggedIn0;
+FusionChangeLeaderPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionInitFWDPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionInitKOPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionInitOKPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionInitPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionMergePacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionRequestPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+FusionRequestResPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+LoginAcceptedPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+LoginAnonymousPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+LoginPasswordPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+LoginRefusedPacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+PrivateFilePacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+PrivateMessagePacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+PublicMessagePacket1392084659XXXaccept1699314435 -> ClientVisitor1478770595XXXvisit1911998296;
+    
+}
+@enduml

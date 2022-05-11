@@ -1,0 +1,704 @@
+@startuml
+
+/' diagram meta data start
+config=StructureConfiguration;
+{
+  "projectClassification": {
+    "searchMode": "OpenProject", // OpenProject, AllProjects
+    "includedProjects": "",
+    "pathEndKeywords": "*.impl",
+    "isClientPath": "",
+    "isClientName": "",
+    "isTestPath": "",
+    "isTestName": "",
+    "isMappingPath": "",
+    "isMappingName": "",
+    "isDataAccessPath": "",
+    "isDataAccessName": "",
+    "isDataStructurePath": "",
+    "isDataStructureName": "",
+    "isInterfaceStructuresPath": "",
+    "isInterfaceStructuresName": "",
+    "isEntryPointPath": "",
+    "isEntryPointName": "",
+    "treatFinalFieldsAsMandatory": false
+  },
+  "graphRestriction": {
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "removeByInheritance": "", // inheritance/annotation based filtering is done in a second step
+    "removeByAnnotation": "",
+    "removeByClassPackage": "", // cleanup the graph after inheritance/annotation based filtering is done
+    "removeByClassName": "",
+    "cutMappings": false,
+    "cutEnum": true,
+    "cutTests": true,
+    "cutClient": true,
+    "cutDataAccess": true,
+    "cutInterfaceStructures": true,
+    "cutDataStructures": true,
+    "cutGetterAndSetter": true,
+    "cutConstructors": true
+  },
+  "graphTraversal": {
+    "forwardDepth": 3,
+    "backwardDepth": 3,
+    "classPackageExcludeFilter": "",
+    "classPackageIncludeFilter": "",
+    "classNameExcludeFilter": "",
+    "classNameIncludeFilter": "",
+    "methodNameExcludeFilter": "",
+    "methodNameIncludeFilter": "",
+    "hideMappings": false,
+    "hideDataStructures": false,
+    "hidePrivateMethods": true,
+    "hideInterfaceCalls": true, // indirection: implementation -> interface (is hidden) -> implementation
+    "onlyShowApplicationEntryPoints": false, // root node is included
+    "useMethodCallsForStructureDiagram": "ForwardOnly" // ForwardOnly, BothDirections, No
+  },
+  "details": {
+    "aggregation": "GroupByClass", // ByClass, GroupByClass, None
+    "showClassGenericTypes": true,
+    "showMethods": true,
+    "showMethodParameterNames": true,
+    "showMethodParameterTypes": true,
+    "showMethodReturnType": true,
+    "showPackageLevels": 2,
+    "showDetailedClassStructure": true
+  },
+  "rootClass": "fr.upem.net.tcp.chatfusion.client.ClientChatFusion",
+  "extensionCallbackMethod": "" // qualified.class.name#methodName - signature: public static String method(String)
+}
+diagram meta data end '/
+
+
+
+digraph g {
+    rankdir="TB"
+    splines=polyline
+    
+
+'nodes 
+subgraph cluster_3596419 { 
+   	label=upem
+	labeljust=l
+	fillcolor="#ececec"
+	style=filled
+   
+   subgraph cluster_1360230834 { 
+   	label=net
+	labeljust=l
+	fillcolor="#d8d8d8"
+	style=filled
+   
+   AContext1963540708[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)AContext</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   activeSinceLastCheck: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   bufferIn: ByteBuffer [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   bufferOut: ByteBuffer [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   closed: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   key: SelectionKey [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   queue: BlockingQueue&lt;Packet&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   socketChannel: SocketChannel [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   visitor: IPacketVisitor [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ close()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ doConnect()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ doRead()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ doWrite()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ processIn()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ processOut()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ queueMessage(packet: Packet)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ silentlyClose()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ updateInterestOps()</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Builder1135106371[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Builder</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   byteBuffer: ByteBuffer [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ addBuffer(newBuffer: ByteBuffer): Builder</TD></TR>
+<TR><TD ALIGN="LEFT" >+ addBytes(bytes: Byte): Builder</TD></TR>
+<TR><TD ALIGN="LEFT" >+ addInt(intValue: int): Builder</TD></TR>
+<TR><TD ALIGN="LEFT" >+ addOpCode(opcode: OPCODE): Builder</TD></TR>
+<TR><TD ALIGN="LEFT" >+ addString(string: String): Builder</TD></TR>
+<TR><TD ALIGN="LEFT" >+ addStringPacket(packet: Packet): Builder</TD></TR>
+<TR><TD ALIGN="LEFT" >+ build(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ClientChatFusion1030237686[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ClientChatFusion</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   authenticated: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   connectToServer: Thread [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   console: Thread [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   key: SelectionKey [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   lock: Object [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   login: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   main: Thread [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   password: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   queue: BlockingQueue&lt;String&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   sc: SocketChannel [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   selector: Selector [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverAddress: InetSocketAddress [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   uniqueContext: Context [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ LogIn()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ LogOut()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ connectToServer()</TD></TR>
+<TR><TD ALIGN="LEFT" >- consoleRun()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ disconnect()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ initiate()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ launch()</TD></TR>
+<TR><TD ALIGN="LEFT" >+ main(args: String[])</TD></TR>
+<TR><TD ALIGN="LEFT" >- processCommands()</TD></TR>
+<TR><TD ALIGN="LEFT" >- sendCommand(msg: String)</TD></TR>
+<TR><TD ALIGN="LEFT" >- silentlyClose(key: SelectionKey)</TD></TR>
+<TR><TD ALIGN="LEFT" >- treatKey(key: SelectionKey)</TD></TR>
+<TR><TD ALIGN="LEFT" >- usage()</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ClientVisitor1478770595[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ClientVisitor</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   client: ClientChatFusion [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   context: Context [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   dtf: DateTimeFormatter [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >- ReceiveFile(packet: PrivateFilePacket)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ visit(packet: Packet)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Commander50095398[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Commander</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ getLogin(args: String[]): String[]</TD></TR>
+<TR><TD ALIGN="LEFT" >+ readFromTerminal(input: String): OPCODE</TD></TR>
+<TR><TD ALIGN="LEFT" >- stringFromFile(path: Path): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ treatPrivateFile(client: ClientChatFusion, input: String)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ treatPrivateMessage(serverSource: String, loginSource: String, input: String): PrivateMessagePacket</TD></TR>
+<TR><TD ALIGN="LEFT" >+ treatPublicMessage(serverSource: String, loginSource: String, input: String): PublicMessagePacket</TD></TR>
+<TR><TD ALIGN="LEFT" >- writeFully(src: ByteBuffer, dst: ByteBuffer): boolean</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Context1030237686[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Context</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   clientChatFusion: ClientChatFusion [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverName: String [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+Context1482123630[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)Context</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   login: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverChatFusion: ServerChatFusion [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ContextForClients1482123630[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ContextForClients</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+   login: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverChatFusion: ServerChatFusion [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   visitor: ServerClientVisitor [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ContextForServer1482123630[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ContextForServer</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+   login: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverChatFusion: ServerChatFusion [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   visitor: ServerServerVisitor [0..1]</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionChangeLeaderPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionChangeLeaderPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   address: InetSocketAddress [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   leader: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ address(): InetSocketAddress</TD></TR>
+<TR><TD ALIGN="LEFT" >+ leader(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionInitFWDPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionInitFWDPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   leaderAddress: InetSocketAddress [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ leaderAddress(): InetSocketAddress</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionInitKOPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionInitKOPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionInitOKPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionInitOKPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   members: List&lt;String&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverSrc: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   socketAddress: InetSocketAddress [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionInitPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionInitPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   members: List&lt;String&gt; [0..*]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverSrc: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   socketAddress: InetSocketAddress [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionMergePacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionMergePacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   name: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ name(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionRequestPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionRequestPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   address: InetSocketAddress [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ address(): InetSocketAddress</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+FusionRequestResPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)FusionRequestResPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   status: Byte [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ status(): Byte</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+IntPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)IntPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   value: int [1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+<TR><TD ALIGN="LEFT" >+ value(): int</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+LoginAcceptedPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)LoginAcceptedPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   server: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ server(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+LoginAnonymousPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)LoginAnonymousPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   login: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+LoginPasswordPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)LoginPasswordPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   login: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   password: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+LoginRefusedPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)LoginRefusedPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+OpCodePacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)OpCodePacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   opCode: OPCODE [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ opCode(): OPCODE</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+PacketReader1452970734[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)PacketReader</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   reader: Reader&lt;? extends Packet&gt; [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ process(buffer: ByteBuffer): ProcessStatus</TD></TR>
+<TR><TD ALIGN="LEFT" >+ reset()</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+PrivateFilePacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)PrivateFilePacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   blockSize: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   bytes: ByteBuffer [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   filename: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   loginDestination: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   loginSource: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   nbBlocks: int [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverDestination: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverSource: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+PrivateMessagePacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)PrivateMessagePacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   loginDestination: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   loginSource: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   message: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverSource: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   severDestination: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ from(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ loginDestination(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ loginSource(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ message(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ serverSource(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ severDestination(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ to(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+PublicMessagePacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)PublicMessagePacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   loginSource: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   message: String [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   opcode: OPCODE [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverSource: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ from(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ loginSource(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ message(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ serverSource(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ServerClientVisitor1478770595[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ServerClientVisitor</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   authenticated: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   context: ContextForClients [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   dtf: DateTimeFormatter [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverChatFusion: ServerChatFusion [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >- ReceiveFile(nbBlocks: int, blockSize: int, bytes: ByteBuffer)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ visit(packet: Packet)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ServerServerVisitor1478770595[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ServerServerVisitor</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   authenticated: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   context: ContextForServer [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   dtf: DateTimeFormatter [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverChatFusion: ServerChatFusion [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >- ReceiveFile(nbBlocks: int, blockSize: int, bytes: ByteBuffer)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ visit(packet: Packet)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+ServerVisitor1478770595[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)ServerVisitor</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   authenticated: boolean [1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   context: Context [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >#   dtf: DateTimeFormatter [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   fusionManger: FusionManger [0..1]</TD></TR>
+<TR><TD ALIGN="LEFT" >-   serverChatFusion: ServerChatFusion [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >- isItForMe(severDestination: String): boolean</TD></TR>
+<TR><TD ALIGN="LEFT" >+ visit(packet: Packet)</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+
+StringPacket1392084659[
+	label=<<TABLE BORDER="1" CELLBORDER="0" CELLPADDING="4" CELLSPACING="0">
+<TR><TD ALIGN="LEFT" >(C)StringPacket</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >-   message: String [0..1]</TD></TR>
+<HR/>
+<TR><TD ALIGN="LEFT" >+ accept(visitor: IPacketVisitor)</TD></TR>
+<TR><TD ALIGN="LEFT" >+ message(): String</TD></TR>
+<TR><TD ALIGN="LEFT" >+ toByteBuffer(): ByteBuffer</TD></TR>
+</TABLE>>
+	style=filled
+	margin=0
+	shape=plaintext
+	fillcolor="#FFFFFF"
+];
+} 
+} 
+
+'edges    
+AContext1963540708 -> ClientVisitor1478770595[arrowhead=none];
+AContext1963540708 -> ClientVisitor1478770595[label="visitor
+[0..1]", arrowhead=none];
+AContext1963540708 -> Context1482123630[arrowhead=none, arrowtail=empty, dir=both];
+AContext1963540708 -> ContextForClients1482123630[arrowhead=none, arrowtail=empty, dir=both];
+AContext1963540708 -> ContextForServer1482123630[arrowhead=none, arrowtail=empty, dir=both];
+AContext1963540708 -> ServerClientVisitor1478770595[arrowhead=none];
+AContext1963540708 -> ServerServerVisitor1478770595[arrowhead=none];
+AContext1963540708 -> ServerVisitor1478770595[arrowhead=none];
+Builder1135106371 -> FusionChangeLeaderPacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionInitFWDPacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionInitKOPacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionInitOKPacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionInitPacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionMergePacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionRequestPacket1392084659[arrowhead=none];
+Builder1135106371 -> FusionRequestResPacket1392084659[arrowhead=none];
+Builder1135106371 -> IntPacket1392084659[arrowhead=none];
+Builder1135106371 -> LoginAcceptedPacket1392084659[arrowhead=none];
+Builder1135106371 -> LoginAnonymousPacket1392084659[arrowhead=none];
+Builder1135106371 -> LoginPasswordPacket1392084659[arrowhead=none];
+Builder1135106371 -> LoginRefusedPacket1392084659[arrowhead=none];
+Builder1135106371 -> OpCodePacket1392084659[arrowhead=none];
+Builder1135106371 -> PrivateFilePacket1392084659[arrowhead=none];
+Builder1135106371 -> PrivateMessagePacket1392084659[arrowhead=none];
+Builder1135106371 -> PublicMessagePacket1392084659[arrowhead=none];
+Builder1135106371 -> StringPacket1392084659[arrowhead=none];
+ClientChatFusion1030237686 -> Context1030237686[label="uniqueContext
+[0..1]"];
+ClientVisitor1478770595 -> ClientChatFusion1030237686[label="client
+[0..1]"];
+ClientVisitor1478770595 -> ServerClientVisitor1478770595[arrowhead=none];
+ClientVisitor1478770595 -> ServerServerVisitor1478770595[arrowhead=none];
+ClientVisitor1478770595 -> ServerVisitor1478770595[arrowhead=none];
+Commander50095398 -> AContext1963540708[label="treatPrivateFile() -> queueMessage()"];
+Context1030237686 -> ClientChatFusion1030237686[label="clientChatFusion
+[0..1]"];
+ContextForClients1482123630 -> ServerClientVisitor1478770595[label="visitor
+[0..1]"];
+ContextForServer1482123630 -> ServerServerVisitor1478770595[label="visitor
+[0..1]"];
+    
+}
+@enduml
